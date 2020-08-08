@@ -28,6 +28,9 @@ router.post(
 router.patch(
   '/:hid',
   [
+    check('_id')
+      .not()
+      .isEmpty(),
     check('name')
       .not()
       .isEmpty(),

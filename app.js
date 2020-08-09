@@ -26,7 +26,7 @@ app.use((req, res, next) => {
 });
 
 // app.use('/api/branches', branchesRoutes);
-// app.use('/api/garments', garmentsRoutes);
+app.use('/api/garments', garmentsRoutes);
 app.use('/api/hqs', hqsRoutes);
 // app.use('/api/users', usersRoutes);
 

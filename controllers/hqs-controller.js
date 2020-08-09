@@ -25,7 +25,7 @@ const getHQById = async (req, res, next) => {
   const hqID = req.params.hid
   let hq;
   try {
-    hq = await HQ.findById(hq);
+    hq = await HQ.findById(hqID);
   } catch (err) {
     const error = new HttpError(
       'Fetching HQ failed, could not find HQ.',

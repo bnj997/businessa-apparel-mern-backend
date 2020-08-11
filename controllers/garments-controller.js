@@ -225,7 +225,6 @@ const deleteGarment = async (req, res, next) => {
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
-
     await garment.remove({session: sess});
 
     for (var i = 0; i < hqsToRemoveGarmentFrom.length; i++) {
@@ -233,7 +232,6 @@ const deleteGarment = async (req, res, next) => {
       hqsToRemoveGarmentFrom[i].garments.splice(index, 1)
       await hqsToRemoveGarmentFrom[i].save({ session: sess }); 
     }
-    
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(

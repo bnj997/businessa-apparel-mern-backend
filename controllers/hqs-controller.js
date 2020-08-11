@@ -3,6 +3,7 @@ const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 const HttpError = require('../models/http-error');
 
+const Garment = require('../models/garment');
 const HQ = require('../models/hq');
 
 const getAllHQs = async (req, res, next) => {
@@ -114,8 +115,10 @@ const deleteHQ = async (req, res, next) => {
   const hqID = req.params.hid;
 
   let hq;
+  let garmentsToRemoveFromHQ
   try {
     hq = await HQ.findById(hqID);
+    garmentsToRemoveFromHQ = await Garment.find( { hqs: { $all: [hqID]} }  )
   } catch (err) {
     const error = new HttpError(
       'Something went wrong, could not delete hq.',
@@ -133,6 +136,12 @@ const deleteHQ = async (req, res, next) => {
     const sess = await mongoose.startSession();
     sess.startTransaction();
     await hq.remove({session: sess});
+
+    for (var i = 0; i < garmentsToRemoveFromHQ.length; i++) {
+      var index = garmentsToRemoveFromHQ[i].hqs.indexOf(hqID)
+      garmentsToRemoveFromHQ[i].hqs.splice(index, 1)
+      await garmentsToRemoveFromHQ[i].save({ session: sess }); 
+    }
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(

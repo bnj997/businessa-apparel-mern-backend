@@ -39,8 +39,7 @@ router.post(
   garmentsController.createGarment
 );
 
-router.patch(
-  '/:gid',
+router.patch('/:gid',
   [
     check('_id')
       .not()
@@ -74,8 +73,12 @@ router.patch(
 
 router.delete('/:gid', garmentsController.deleteGarment);
 
-
 router.get('/hq/:hqid', garmentsController.getGarmentsByHqID)
+router.patch('/hq/:hqid', garmentsController.addGarmentsToHqID);
+router.patch('/hq/:hqid/:gid', garmentsController.removeGarmentFromHqID);
+
+
+router.get('/hq/:hqid/available', garmentsController.getAvailableGarmentsByHqID)
 
 // router.post(
 //   '/hq/:hqid/:gid',

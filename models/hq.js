@@ -8,7 +8,8 @@ const hqSchema = new Schema({
   name: { type: String, required: true },
   telephone: { type: String, required: true },
   email: { type: String, required: true },
-  garments: [{type: Schema.Types.ObjectId, required: true, ref: 'Garment'}]
+  // garments: [{type: Schema.Types.ObjectId, required: true, ref: 'Garment'}]
+  garments: [{type: String, required: true, ref: 'Garment'}]
 });
 
 hqSchema.plugin(uniqueValidator);

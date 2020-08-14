@@ -23,6 +23,7 @@ const createBranch = async (req, res, next) => {
     address,
     email,
     hq, 
+    users: []
   });
 
   let hqMain;

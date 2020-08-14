@@ -10,7 +10,8 @@ const hqSchema = new Schema({
   email: { type: String, required: true },
   // garments: [{type: Schema.Types.ObjectId, required: true, ref: 'Garment'}]
   garments: [{type: String, required: true, ref: 'Garment'}],
-  branches: [{type: String, required: true, ref: 'Branch'}]
+  branches: [{type: String, required: true, ref: 'Branch'}],
+  users: [{type: String, required: true, ref: 'User'}]
 });
 
 hqSchema.plugin(uniqueValidator);

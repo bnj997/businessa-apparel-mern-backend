@@ -9,7 +9,8 @@ const branchSchema = new Schema({
   telephone: { type: String, required: true },
   address: {type: String, required: true },
   email: { type: String, required: true },
-  hq: {type: String, required: true, ref: 'HQ'}
+  hq: {type: String, required: true, ref: 'HQ'},
+  users: [{type: String, required: true, ref: 'User'}]
 });
 
 branchSchema.plugin(uniqueValidator);

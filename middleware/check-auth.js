@@ -15,7 +15,8 @@ module.exports = (req, res, next) => {
     req.userData = { userId: decodedToken.userId, username: decodedToken.username };
     next();
   } catch (err) {
-    const error = new HttpError('Authentication failed!', 403);
+    console.log(err)
+    const error = new HttpError('Invalid Token. Please log back in!', 403);
     return next(error);
   }
 };

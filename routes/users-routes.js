@@ -6,9 +6,9 @@ const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
 
-router.use(checkAuth);
+router.post('/login', usersController.login);
 
-router.get('/:hid', usersController.getUsersByHqID);
+router.use(checkAuth);
 
 router.post(
   '/:hid',
@@ -34,7 +34,8 @@ router.post(
   usersController.createUser
 );
 
-router.post('/login', usersController.login);
+
+router.get('/:hid', usersController.getUsersByHqID);
 
 
 router.patch('/:hid/:uid',

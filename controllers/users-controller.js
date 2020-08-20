@@ -19,6 +19,7 @@ const createUser = async (req, res, next) => {
     );
   }
   const { _id, hq, branch, username, email, password} = req.body;
+  // const { username, password} = req.body;
   
   let existingUser;
   try {
@@ -126,7 +127,7 @@ const login = async (req, res, next) => {
     existingUser = await User.findOne({ username: username });
   } catch (err) {
     const error = new HttpError(
-      'Loggin in failed, please try again later.',
+      'Logging in failed, please try again later.',
       500
     );
     return next(error);
@@ -154,11 +155,12 @@ const login = async (req, res, next) => {
 
   if (!isValidPassword) {
     const error = new HttpError(
-      'Invalid password, please try again.',
-      401
+      'Invalid credentials, could not log you in.',
+      403
     );
     return next(error);
   }
+
 
   let token;
   try {

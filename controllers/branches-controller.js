@@ -10,7 +10,7 @@ const branch = require('../models/branch');
 
 const createBranch = async (req, res, next) => {
 
-  if (req.userData.username !== "admin") {
+  if (req.userData.username !== "adminstaff") {
     const error = new HttpError('Unauthorised action.', 401);
     return next(error);
   }

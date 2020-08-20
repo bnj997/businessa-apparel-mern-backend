@@ -9,12 +9,20 @@ const branch = require('../models/branch');
 
 
 const createBranch = async (req, res, next) => {
+
+  if (req.userData.username !== "admin") {
+    const error = new HttpError('Unauthorised action.', 401);
+    return next(error);
+  }
+
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
       new HttpError(`Creating Branch Failed. Invalid inputs passed, please check your data.`, 422)
     );
   }
+  
   const { _id, name, telephone, address, email, hq} = req.body;
   const createdBranch = new Branch({
     _id,

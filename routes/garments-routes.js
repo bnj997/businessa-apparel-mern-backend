@@ -1,8 +1,12 @@
 const express = require('express');
 const { check } = require('express-validator')
+
 const garmentsController = require('../controllers/garments-controller');
+const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
+
+router.use(checkAuth);
 
 router.get('/', garmentsController.getAllGarments);
 

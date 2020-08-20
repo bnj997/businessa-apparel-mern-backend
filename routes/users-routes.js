@@ -1,8 +1,12 @@
 const express = require('express');
 const { check } = require('express-validator')
+
 const usersController = require('../controllers/users-controller');
+const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
+
+router.use(checkAuth);
 
 router.get('/:hid', usersController.getUsersByHqID);
 
@@ -29,6 +33,9 @@ router.post(
   ],
   usersController.createUser
 );
+
+router.post('/login', usersController.login);
+
 
 router.patch('/:hid/:uid',
   [

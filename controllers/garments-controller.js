@@ -6,7 +6,17 @@ const HttpError = require('../models/http-error');
 const Garment = require('../models/garment');
 const HQ = require('../models/hq');
 
+const checkPermission = (username) => {
+  if (username !== "adminstaff") {
+    const error = new HttpError('Unauthorised action.', 401);
+    return next(error);
+  }
+}
+
+
 const getAllGarments = async (req, res, next) => {
+  checkPermission(req.userData.username);
+
   let garments;
   try {
     garments = await Garment.find();
@@ -23,6 +33,8 @@ const getAllGarments = async (req, res, next) => {
 
 
 const getGarmentsByHqID = async (req, res, next) => {
+  checkPermission(req.userData.username);
+
   const hqID = req.params.hqid
   let hqWithGarments;
 
@@ -46,6 +58,8 @@ const getGarmentsByHqID = async (req, res, next) => {
 };
 
 const getAvailableGarmentsByHqID = async (req, res, next) => {
+  checkPermission(req.userData.username);
+
   const hqID = req.params.hqid
   let garmentsAvailableForHQ;
 
@@ -71,6 +85,8 @@ const getAvailableGarmentsByHqID = async (req, res, next) => {
 
 
 const createGarment = async (req, res, next) => {
+  checkPermission(req.userData.username);
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
@@ -110,6 +126,8 @@ const createGarment = async (req, res, next) => {
 
 
 const addGarmentsToHqID = async (req, res, next) => {
+  checkPermission(req.userData.username);
+
   const hqID = req.params.hqid
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -157,6 +175,8 @@ const addGarmentsToHqID = async (req, res, next) => {
 
 
 const updateGarment = async (req, res, next) => {
+  checkPermission(req.userData.username);
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
@@ -202,6 +222,8 @@ const updateGarment = async (req, res, next) => {
 
 
 const deleteGarment = async (req, res, next) => {
+  checkPermission(req.userData.username);
+
   const garmentID = req.params.gid;
 
   let garment;
@@ -247,6 +269,8 @@ const deleteGarment = async (req, res, next) => {
 
 
 const removeGarmentFromHqID = async (req, res, next) => {
+  checkPermission(req.userData.username);
+  
   const garmentID = req.params.gid;
   const hqID = req.params.hqid
 

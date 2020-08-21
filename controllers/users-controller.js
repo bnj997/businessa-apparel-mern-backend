@@ -10,8 +10,18 @@ const User = require('../models/user');
 const Branch = require('../models/branch');
 const HQ = require('../models/hq');
 
+const checkPermission = (username) => {
+  if (username !== "adminstaff") {
+    const error = new HttpError('Unauthorised action.', 401);
+    return next(error);
+  }
+}
+
+
 
 const createUser = async (req, res, next) => {
+  checkPermission(req.userData.username);
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
@@ -187,6 +197,8 @@ const login = async (req, res, next) => {
 
 
 const getUsersByHqID = async (req, res, next) => {
+  checkPermission(req.userData.username);
+
   const hqID = req.params.hid
   let hqWithUsers;
 
@@ -250,6 +262,8 @@ const updateUser = async (req, res, next) => {
 
 
 const deleteUserFromHqID = async (req, res, next) => {
+  checkPermission(req.userData.username);
+  
   const userId = req.params.uid;
 
   let user;

@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
-const { validationResult } = require('express-validator');
+const { validationResult, check } = require('express-validator');
 const mongoose = require('mongoose');
 const HttpError = require('../models/http-error');
 
@@ -7,14 +7,16 @@ const Branch = require('../models/branch');
 const HQ = require('../models/hq');
 const branch = require('../models/branch');
 
-
-const createBranch = async (req, res, next) => {
-
-  if (req.userData.username !== "adminstaff") {
+const checkPermission = (username) => {
+  if (username !== "adminstaff") {
     const error = new HttpError('Unauthorised action.', 401);
     return next(error);
   }
+}
 
+
+const createBranch = async (req, res, next) => {
+  checkPermission(req.userData.username);
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -70,6 +72,8 @@ const createBranch = async (req, res, next) => {
 
 
 const getBranchesByHqID = async (req, res, next) => {
+  checkPermission(req.userData.username);
+
   const hqID = req.params.hid
   let hqWithBranches;
 
@@ -93,6 +97,8 @@ const getBranchesByHqID = async (req, res, next) => {
 
 
 const updateBranch = async (req, res, next) => {
+  checkPermission(req.userData.username);
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
@@ -135,6 +141,8 @@ const updateBranch = async (req, res, next) => {
 
 
 const deleteBranchFromHqID = async (req, res, next) => {
+  checkPermission(req.userData.username);
+  
   const branchId = req.params.bid;
 
   let branch;

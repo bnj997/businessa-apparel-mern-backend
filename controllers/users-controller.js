@@ -10,7 +10,7 @@ const User = require('../models/user');
 const Branch = require('../models/branch');
 const HQ = require('../models/hq');
 
-const checkPermission = (username) => {
+const checkPermission = async (username, next) => {
   if (username !== "adminstaff") {
     const error = new HttpError('Unauthorised action.', 401);
     return next(error);
@@ -20,7 +20,7 @@ const checkPermission = (username) => {
 
 
 const createUser = async (req, res, next) => {
-  checkPermission(req.userData.username);
+  checkPermission(req.userData.username, next);
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -130,6 +130,7 @@ const createUser = async (req, res, next) => {
   .json({ userId: createdUser._id, username: createdUser.username, token: token });
 };
 
+
 const login = async (req, res, next) => {
   const { username, password } = req.body;
   let existingUser;
@@ -197,7 +198,7 @@ const login = async (req, res, next) => {
 
 
 const getUsersByHqID = async (req, res, next) => {
-  checkPermission(req.userData.username);
+  checkPermission(req.userData.username, next);
 
   const hqID = req.params.hid
   let hqWithUsers;
@@ -222,7 +223,7 @@ const getUsersByHqID = async (req, res, next) => {
 
 
 const updateUser = async (req, res, next) => {
-  const errors = validationResult(req);
+  checkPermission(req.userData.username, next);
   if (!errors.isEmpty()) {
     return next(
       new HttpError(`Invalid inputs passed, please check your data`, 422)
@@ -262,8 +263,8 @@ const updateUser = async (req, res, next) => {
 
 
 const deleteUserFromHqID = async (req, res, next) => {
-  checkPermission(req.userData.username);
-  
+  checkPermission(req.userData.username, next);
+
   const userId = req.params.uid;
 
   let user;

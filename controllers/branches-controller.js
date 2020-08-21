@@ -7,7 +7,7 @@ const Branch = require('../models/branch');
 const HQ = require('../models/hq');
 const branch = require('../models/branch');
 
-const checkPermission = (username) => {
+const checkPermission = async (username, next) => {
   if (username !== "adminstaff") {
     const error = new HttpError('Unauthorised action.', 401);
     return next(error);
@@ -16,7 +16,7 @@ const checkPermission = (username) => {
 
 
 const createBranch = async (req, res, next) => {
-  checkPermission(req.userData.username);
+  checkPermission(req.userData.username, next);
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -72,7 +72,7 @@ const createBranch = async (req, res, next) => {
 
 
 const getBranchesByHqID = async (req, res, next) => {
-  checkPermission(req.userData.username);
+  checkPermission(req.userData.username, next);
 
   const hqID = req.params.hid
   let hqWithBranches;
@@ -97,7 +97,7 @@ const getBranchesByHqID = async (req, res, next) => {
 
 
 const updateBranch = async (req, res, next) => {
-  checkPermission(req.userData.username);
+  checkPermission(req.userData.username, next);
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -141,8 +141,8 @@ const updateBranch = async (req, res, next) => {
 
 
 const deleteBranchFromHqID = async (req, res, next) => {
-  checkPermission(req.userData.username);
-  
+  checkPermission(req.userData.username, next);
+
   const branchId = req.params.bid;
 
   let branch;

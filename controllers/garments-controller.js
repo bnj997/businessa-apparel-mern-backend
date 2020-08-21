@@ -6,7 +6,7 @@ const HttpError = require('../models/http-error');
 const Garment = require('../models/garment');
 const HQ = require('../models/hq');
 
-const checkPermission = (username) => {
+const checkPermission = async (username, next) => {
   if (username !== "adminstaff") {
     const error = new HttpError('Unauthorised action.', 401);
     return next(error);
@@ -15,7 +15,7 @@ const checkPermission = (username) => {
 
 
 const getAllGarments = async (req, res, next) => {
-  checkPermission(req.userData.username);
+  checkPermission(req.userData.username, next);
 
   let garments;
   try {
@@ -33,7 +33,7 @@ const getAllGarments = async (req, res, next) => {
 
 
 const getGarmentsByHqID = async (req, res, next) => {
-  checkPermission(req.userData.username);
+  checkPermission(req.userData.username, next);
 
   const hqID = req.params.hqid
   let hqWithGarments;
@@ -58,7 +58,7 @@ const getGarmentsByHqID = async (req, res, next) => {
 };
 
 const getAvailableGarmentsByHqID = async (req, res, next) => {
-  checkPermission(req.userData.username);
+  checkPermission(req.userData.username, next);
 
   const hqID = req.params.hqid
   let garmentsAvailableForHQ;
@@ -85,7 +85,7 @@ const getAvailableGarmentsByHqID = async (req, res, next) => {
 
 
 const createGarment = async (req, res, next) => {
-  checkPermission(req.userData.username);
+  checkPermission(req.userData.username, next);
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -126,7 +126,7 @@ const createGarment = async (req, res, next) => {
 
 
 const addGarmentsToHqID = async (req, res, next) => {
-  checkPermission(req.userData.username);
+  checkPermission(req.userData.username, next);
 
   const hqID = req.params.hqid
   const errors = validationResult(req);
@@ -175,7 +175,7 @@ const addGarmentsToHqID = async (req, res, next) => {
 
 
 const updateGarment = async (req, res, next) => {
-  checkPermission(req.userData.username);
+  checkPermission(req.userData.username, next);
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -222,7 +222,7 @@ const updateGarment = async (req, res, next) => {
 
 
 const deleteGarment = async (req, res, next) => {
-  checkPermission(req.userData.username);
+  checkPermission(req.userData.username, next);
 
   const garmentID = req.params.gid;
 
@@ -269,8 +269,8 @@ const deleteGarment = async (req, res, next) => {
 
 
 const removeGarmentFromHqID = async (req, res, next) => {
-  checkPermission(req.userData.username);
-  
+  checkPermission(req.userData.username, next);
+
   const garmentID = req.params.gid;
   const hqID = req.params.hqid
 

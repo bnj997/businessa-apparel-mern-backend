@@ -6,7 +6,7 @@ const HttpError = require('../models/http-error');
 const Garment = require('../models/garment');
 const HQ = require('../models/hq');
 
-const checkPermission = (username) => {
+const checkPermission = async (username, next) => {
   if (username !== "adminstaff") {
     const error = new HttpError('Unauthorised action.', 401);
     return next(error);
@@ -15,7 +15,7 @@ const checkPermission = (username) => {
 
 
 const getAllHQs = async (req, res, next) => {
-  checkPermission(req.userData.username);
+  checkPermission(req.userData.username, next);
 
   let hqs;
   try {
@@ -33,7 +33,7 @@ const getAllHQs = async (req, res, next) => {
 
 
 const getHQById = async (req, res, next) => {
-  checkPermission(req.userData.username);
+  checkPermission(req.userData.username, next);
 
   const hqID = req.params.hid
   let hq;
@@ -52,7 +52,7 @@ const getHQById = async (req, res, next) => {
 
 
 const createHQ = async (req, res, next) => {
-  checkPermission(req.userData.username);
+  checkPermission(req.userData.username, next);
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -86,7 +86,7 @@ const createHQ = async (req, res, next) => {
 
 
 const updateHQ = async (req, res, next) => {
-  checkPermission(req.userData.username);
+  checkPermission(req.userData.username, next);
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -128,8 +128,8 @@ const updateHQ = async (req, res, next) => {
 
 
 const deleteHQ = async (req, res, next) => {
-  checkPermission(req.userData.username);
-  
+  checkPermission(req.userData.username, next);
+
   const hqID = req.params.hid;
 
   let hq;

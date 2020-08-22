@@ -1,3 +1,4 @@
+const fs = require('fs');
 
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
@@ -96,6 +97,7 @@ const createGarment = async (req, res, next) => {
   const { _id, styleNum, name, price, category, supplier, description, colours, sizes} = req.body;
   const createdGarment = new Garment({
     _id,
+    image: req.file.path,
     styleNum,
     name,
     price,
@@ -198,6 +200,13 @@ const updateGarment = async (req, res, next) => {
     return next(error);
   }
   
+  if (req.file !== undefined) {
+    const imagePath = garment.image;
+    fs.unlink(imagePath, err => {
+      console.log(err);
+    });
+    garment.image = req.file.path
+  };
   garment.styleNum = styleNum;
   garment.name = name;
   garment.price = price;
@@ -244,6 +253,8 @@ const deleteGarment = async (req, res, next) => {
     return next(error);
   }
 
+  const imagePath = garment.image;
+
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -262,6 +273,10 @@ const deleteGarment = async (req, res, next) => {
     );
     return next(error);
   }
+
+  fs.unlink(imagePath, err => {
+    console.log(err);
+  });
   
   res.status(200).json({ message: 'Deleted garment.' });
 };

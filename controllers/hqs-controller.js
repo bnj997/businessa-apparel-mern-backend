@@ -112,7 +112,7 @@ const updateHQ = async (req, res, next) => {
     return next(error);
   }
 
-  //if you did not upadte image
+  //if you updated image
   if (req.file !== undefined) {
     const imagePath = hq.image;
     fs.unlink(imagePath, err => {

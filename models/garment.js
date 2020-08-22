@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 
 const garmentSchema = new Schema({
   _id: { type: String, required: true },
+  image: {type: String, required: true},
   styleNum: { type: String, required: true },
   name: { type: String, required: true },
   price: { type: Number, required: true },

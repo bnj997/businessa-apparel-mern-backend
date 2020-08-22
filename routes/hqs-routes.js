@@ -2,6 +2,7 @@ const express = require('express');
 const { check } = require('express-validator')
 
 const hqsController = require('../controllers/hqs-controller');
+const fileUpload = require('../middleware/file-upload');
 const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
@@ -14,6 +15,7 @@ router.get('/:hid', hqsController.getHQById);
 
 router.post(
   '/',
+  fileUpload.single('image'),
   [
     check('_id')
       .not()
@@ -31,6 +33,7 @@ router.post(
 
 router.patch(
   '/:hid',
+  fileUpload.single('image'),
   [
     check('_id')
       .not()

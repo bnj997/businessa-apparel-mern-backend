@@ -5,7 +5,7 @@ const HttpError = require('../models/http-error');
 
 const Branch = require('../models/branch');
 const HQ = require('../models/hq');
-const branch = require('../models/branch');
+const User = require('../models/user');
 
 const checkPermission = async (username, next) => {
   if (username !== "adminstaff") {
@@ -72,7 +72,7 @@ const createBranch = async (req, res, next) => {
 
 
 const getBranchesByHqID = async (req, res, next) => {
-  checkPermission(req.userData.username, next);
+  // checkPermission(req.userData.username, next);
 
   const hqID = req.params.hid
   let hqWithBranches;
@@ -87,11 +87,11 @@ const getBranchesByHqID = async (req, res, next) => {
     return next(error);
   }
 
-  if (!hqWithBranches || hqWithBranches.branches.length === 0) {
-    return next(
-      new HttpError('Could not find branches for the provided HQ id.', 404)
-    );
-  }
+  // if (!hqWithBranches || hqWithBranches.branches.length === 0) {
+  //   return next(
+  //     new HttpError('Could not find branches for the provided HQ id.', 404)
+  //   );
+  // }
   res.json({ branches: hqWithBranches.branches.map(branch => branch.toObject({ getters: true })) });
 };
 
@@ -146,8 +146,10 @@ const deleteBranchFromHqID = async (req, res, next) => {
   const branchId = req.params.bid;
 
   let branch;
+  let branchName;
   try {
     branch = await Branch.findById(branchId).populate('hq');
+    branchName =  branch.name;
   } catch (err) {
     const error = new HttpError(
       'Something went wrong, could not delete branch.',
@@ -166,6 +168,10 @@ const deleteBranchFromHqID = async (req, res, next) => {
     sess.startTransaction();
     await branch.remove({session: sess});
     branch.hq.branches.pull(branch);
+
+
+    await User.deleteMany({branch: branchName})
+
     await branch.hq.save({session: sess});
     await sess.commitTransaction();
   } catch (err) {

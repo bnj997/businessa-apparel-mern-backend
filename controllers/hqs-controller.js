@@ -6,6 +6,8 @@ const mongoose = require('mongoose');
 const HttpError = require('../models/http-error');
 
 const Garment = require('../models/garment');
+const User = require('../models/user');
+const Branch = require('../models/branch');
 const HQ = require('../models/hq');
 
 const checkPermission = async (username, next) => {
@@ -17,7 +19,7 @@ const checkPermission = async (username, next) => {
 
 
 const getAllHQs = async (req, res, next) => {
-  checkPermission(req.userData.username, next);
+  // checkPermission(req.userData.username, next);
 
   let hqs;
   try {
@@ -144,9 +146,11 @@ const deleteHQ = async (req, res, next) => {
   const hqID = req.params.hid;
 
   let hq;
-  let garmentsToRemoveFromHQ
+  let garmentsToRemoveFromHQ;
   try {
     hq = await HQ.findById(hqID);
+    // branchesToRemoveFromHQ = await Branch.find( { hq: hqID }  )
+    // usersToRemoveFromHQ = await User.find( { hq: hqID }  )
     garmentsToRemoveFromHQ = await Garment.find( { hqs: { $all: [hqID]} }  )
   } catch (err) {
     const error = new HttpError(
@@ -166,13 +170,18 @@ const deleteHQ = async (req, res, next) => {
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
+    await User.deleteMany({hq: hqID})
+    await Branch.deleteMany({hq: hqID})
     await hq.remove({session: sess});
+
 
     for (var i = 0; i < garmentsToRemoveFromHQ.length; i++) {
       var index = garmentsToRemoveFromHQ[i].hqs.indexOf(hqID)
       garmentsToRemoveFromHQ[i].hqs.splice(index, 1)
       await garmentsToRemoveFromHQ[i].save({ session: sess }); 
     }
+
+
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(

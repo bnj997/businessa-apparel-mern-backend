@@ -213,23 +213,24 @@ const getUsersByHqID = async (req, res, next) => {
     return next(error);
   }
 
-  if (!hqWithUsers || hqWithUsers.users.length === 0) {
-    return next(
-      new HttpError('Could not find users for the provided HQ id.', 404)
-    );
-  }
+  // if (!hqWithUsers || hqWithUsers.users.length === 0) {
+  //   return next(
+  //     new HttpError('Could not find users for the provided HQ id.', 404)
+  //   );
+  // }
   res.json({ users: hqWithUsers.users.map(user => user.toObject({ getters: true })) });
 };
 
 
 const updateUser = async (req, res, next) => {
   checkPermission(req.userData.username, next);
+  const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
       new HttpError(`Invalid inputs passed, please check your data`, 422)
     );
   }
-  const {username, email, password} = req.body;
+  const {branch, username, email, password} = req.body;
   const userId = req.params.uid;
 
   let user;
@@ -243,6 +244,7 @@ const updateUser = async (req, res, next) => {
     return next(error);
   }
 
+  user.branch = branch;
   user.username = username;
   user.email = email;
   user.password = password;

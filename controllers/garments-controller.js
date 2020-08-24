@@ -16,7 +16,7 @@ const checkPermission = async (username, next) => {
 
 
 const getAllGarments = async (req, res, next) => {
-  checkPermission(req.userData.username, next);
+  // checkPermission(req.userData.username, next);
 
   let garments;
   try {
@@ -49,11 +49,11 @@ const getGarmentsByHqID = async (req, res, next) => {
     return next(error);
   }
 
-  if (!hqWithGarments || hqWithGarments.garments.length === 0) {
-    return next(
-      new HttpError('Could not find garments for the provided HQ id.', 404)
-    );
-  }
+  // if (!hqWithGarments || hqWithGarments.garments.length === 0) {
+  //   return next(
+  //     new HttpError('Could not find garments for the provided HQ id.', 404)
+  //   );
+  // }
 
   res.json({ garments: hqWithGarments.garments.map(garment => garment.toObject({ getters: true })) });
 };
@@ -75,11 +75,11 @@ const getAvailableGarmentsByHqID = async (req, res, next) => {
     return next(error);
   }
 
-  if (!garmentsAvailableForHQ || garmentsAvailableForHQ.length === 0) {
-    return next(
-      new HttpError('Could not find available garments for the provided HQ id.', 404)
-    );
-  }
+  // if (!garmentsAvailableForHQ || garmentsAvailableForHQ.length === 0) {
+  //   return next(
+  //     new HttpError('Could not find available garments for the provided HQ id.', 404)
+  //   );
+  // }
 
   res.json({ garments: garmentsAvailableForHQ.map(garment => garment.toObject({ getters: true })) });
 };

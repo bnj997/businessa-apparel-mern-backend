@@ -2,18 +2,11 @@ const { v4: uuidv4 } = require('uuid');
 const { validationResult, check } = require('express-validator');
 const mongoose = require('mongoose');
 const HttpError = require('../models/http-error');
+const checkPermission = require('../utils/check-permission');
 
 const Branch = require('../models/branch');
 const HQ = require('../models/hq');
 const User = require('../models/user');
-
-const checkPermission = async (username, next) => {
-  if (username !== "adminstaff") {
-    const error = new HttpError('Unauthorised action.', 401);
-    return next(error);
-  }
-}
-
 
 const createBranch = async (req, res, next) => {
   checkPermission(req.userData.username, next);
@@ -72,7 +65,7 @@ const createBranch = async (req, res, next) => {
 
 
 const getBranchesByHqID = async (req, res, next) => {
-  // checkPermission(req.userData.username, next);
+  checkPermission(req.userData.username, next);
 
   const hqID = req.params.hid
   let hqWithBranches;

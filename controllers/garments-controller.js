@@ -3,27 +3,21 @@ const fs = require('fs');
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 const HttpError = require('../models/http-error');
+const checkPermission = require('../utils/check-permission')
 
 const Garment = require('../models/garment');
 const HQ = require('../models/hq');
 
-const checkPermission = async (username, next) => {
-  if (username !== "adminstaff") {
-    const error = new HttpError('Unauthorised action.', 401);
-    return next(error);
-  }
-}
-
 
 const getAllGarments = async (req, res, next) => {
-  // checkPermission(req.userData.username, next);
+  checkPermission(req.userData.username, next);
 
   let garments;
   try {
     garments = await Garment.find();
   } catch (err) {
     const error = new HttpError(
-      'Fetching Garmentss failed, please try again later.',
+      'Fetching Garments failed, please try again later.',
       500
     );
     return next(error);

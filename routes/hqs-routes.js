@@ -7,10 +7,9 @@ const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
 
-// router.use(checkAuth);
+router.use(checkAuth);
 
 router.get('/', hqsController.getAllHQs);
-router.use(checkAuth);
 
 router.get('/:hid', hqsController.getHQById);
 

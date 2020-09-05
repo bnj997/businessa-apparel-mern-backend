@@ -10,6 +10,7 @@ const HttpError = require('./models/http-error');
 const branchesRoutes = require('./routes/branches-routes');
 const garmentsRoutes = require('./routes/garments-routes');
 const hqsRoutes = require('./routes/hqs-routes');
+const cartsRoutes = require('./routes/carts-routes');
 const usersRoutes = require('./routes/users-routes');
 
 const app = express();
@@ -32,6 +33,7 @@ app.use('/api/branches', branchesRoutes);
 app.use('/api/garments', garmentsRoutes);
 app.use('/api/hqs', hqsRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/cart', cartsRoutes);
 
 app.use((req, res, next) => {
   const error = new HttpError('Could not find this route.', 404);

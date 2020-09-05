@@ -84,6 +84,7 @@ router.delete('/:gid', garmentsController.deleteGarment);
 router.get('/hq/:hqid', garmentsController.getGarmentsByHqID)
 router.patch('/hq/:hqid', garmentsController.addGarmentsToHqID);
 router.patch('/hq/:hqid/:gid', garmentsController.removeGarmentFromHqID);
+router.get('/user/:uid', garmentsController.getGarmentsByUserID)
 
 
 router.get('/hq/:hqid/available', garmentsController.getAvailableGarmentsByHqID)

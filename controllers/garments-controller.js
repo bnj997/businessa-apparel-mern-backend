@@ -7,6 +7,7 @@ const checkPermission = require('../utils/check-permission')
 
 const Garment = require('../models/garment');
 const HQ = require('../models/hq');
+const User = require('../models/user');
 
 
 const getAllGarments = async (req, res, next) => {
@@ -48,6 +49,31 @@ const getGarmentsByHqID = async (req, res, next) => {
   //     new HttpError('Could not find garments for the provided HQ id.', 404)
   //   );
   // }
+
+  res.json({ garments: hqWithGarments.garments.map(garment => garment.toObject({ getters: true })) });
+};
+
+const getGarmentsByUserID = async (req, res, next) => {
+  const userID = req.userData.userId
+  let usersHQ;
+
+  try {
+    usersHQ = await User.findById(userID).populate('hq');
+    hqWithGarments = await HQ.findById(usersHQ.hq._id).populate('garments');
+  } catch (err) {
+    const error = new HttpError(
+      `Could not get garments for given user. + ${err} `,
+      500
+    );
+    return next(error);
+  }
+
+  console.log(hqWithGarments)
+  if (!hqWithGarments || hqWithGarments.garments.length === 0) {
+    return next(
+      new HttpError('Could not find garments for the provided HQ id.', 404)
+    );
+  }
 
   res.json({ garments: hqWithGarments.garments.map(garment => garment.toObject({ getters: true })) });
 };
@@ -329,6 +355,7 @@ const removeGarmentFromHqID = async (req, res, next) => {
 
 exports.getAllGarments = getAllGarments;
 exports.getGarmentsByHqID = getGarmentsByHqID;
+exports.getGarmentsByUserID = getGarmentsByUserID;
 exports.getAvailableGarmentsByHqID = getAvailableGarmentsByHqID;
 exports.createGarment = createGarment;
 exports.addGarmentsToHqID = addGarmentsToHqID;

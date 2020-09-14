@@ -14,7 +14,6 @@ const garmentSchema = new Schema({
   description: { type: String, required: true },
   colours: [{ type: String, required: true }],
   sizes: [{ type: String, required: true }],
-  // hqs: [{type: Schema.Types.ObjectId, required: true, ref: 'HQ'}]
   hqs: [{type: String, required: true, ref: 'HQ'}]
 });
 

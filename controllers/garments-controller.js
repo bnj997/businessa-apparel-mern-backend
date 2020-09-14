@@ -68,7 +68,6 @@ const getGarmentsByUserID = async (req, res, next) => {
     return next(error);
   }
 
-  console.log(hqWithGarments)
   if (!hqWithGarments || hqWithGarments.garments.length === 0) {
     return next(
       new HttpError('Could not find garments for the provided HQ id.', 404)

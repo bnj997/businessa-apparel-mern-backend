@@ -8,6 +8,10 @@ const checkPermission = require('../utils/check-permission')
 
 const Order = require('../models/order');
 const OrderLine = require('../models/order-line');
+const { privateDecrypt } = require('crypto');
+
+
+
 
 const createOrderline = async (req, res, next) => {
   const order = req.params.oid;
@@ -28,11 +32,14 @@ const createOrderline = async (req, res, next) => {
       _id: uniqueID,
       order: order,
       garment: cart[i].id,
+      name: cart[i].name,
+      image: cart[i].image,
       colour: cart[i].colour,
       size: cart[i].size,
       quantity: cart[i].quantity,
+      price: cart[i].price,
+      subtotal: cart[i].subtotal
     });
-
 
     try {
       const sess = await mongoose.startSession();
@@ -49,8 +56,37 @@ const createOrderline = async (req, res, next) => {
       return next(error);
     }
   }
-  res.status(201).json({orderLine: createdOrderline.toObject({ getters: true }) });
+  res.status(201).json({orderOfInterest: orderOfInterest.toObject({ getters: true }) });
 };
 
+
+
+const getOrderlinesByOrder = async (req, res, next) => {
+
+  const orderID = req.params.oid
+  let orderWithOrderlines;
+
+  try {
+    orderWithOrderlines = await Order.findById(orderID).populate('orderlines');
+  } catch (err) {
+    const error = new HttpError(
+      `Fetching order lines failed, try again later. + ${err} `,
+      500
+    );
+    return next(error);
+  }
+
+  if (!orderWithOrderlines || orderWithOrderlines.orderlines.length === 0) {
+    return next(
+      new HttpError('Could not find order items for the provided order.', 404)
+    );
+  }
+
+  res.json({ orderlines: orderWithOrderlines.orderlines.map(orderline => orderline.toObject({ getters: true })) });
+};
+
+
+
 exports.createOrderline = createOrderline;
+exports.getOrderlinesByOrder = getOrderlinesByOrder;
 

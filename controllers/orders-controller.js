@@ -11,6 +11,23 @@ const User = require('../models/user')
 const Branch = require('../models/branch')
 
 
+const getOrders = async (req, res, next) => {
+  checkPermission(req.userData.username, next);
+  let orders;
+  try {
+    orders = await Order.find();
+  } catch (err) {
+    const error = new HttpError(
+      'Fetching Orders failed, please try again later.',
+      500
+    );
+    return next(error);
+  }
+  res.json({ orders: orders.map(order => order.toObject({ getters: true })) });
+};
+
+
+
 const getOrdersByUser = async (req, res, next) => {
   const userId = req.params.uid
   let orders;
@@ -86,4 +103,5 @@ const createOrder = async (req, res, next) => {
 
 exports.createOrder = createOrder;
 exports.getOrdersByUser = getOrdersByUser;
+exports.getOrders = getOrders;
 exports.getOrderByID = getOrderByID;

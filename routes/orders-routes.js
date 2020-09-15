@@ -8,6 +8,7 @@ router.use(checkAuth);
 
 router.get('/user/:uid', ordersController.getOrdersByUser);
 router.get('/:oid', ordersController.getOrderByID);
+router.get('/', ordersController.getOrders);
 router.post('/', ordersController.createOrder);
 
 

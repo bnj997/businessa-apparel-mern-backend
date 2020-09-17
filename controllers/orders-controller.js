@@ -16,7 +16,7 @@ const getOrders = async (req, res, next) => {
   checkPermission(req.userData.username, next);
   let orders;
   try {
-    orders = await Order.find();
+    orders = await Order.find().populate('hq').populate('branch');
   } catch (err) {
     const error = new HttpError(
       'Fetching Orders failed, please try again later.',
@@ -33,7 +33,7 @@ const getOrdersByUser = async (req, res, next) => {
   const userId = req.params.uid
   let orders;
   try {
-    orders = await Order.find({user : userId});
+    orders = await Order.find({user : userId}).populate('hq').populate('branch');
   } catch (err) {
     const error = new HttpError(
       'Fetching Orders failed, please try again later.',
@@ -48,7 +48,7 @@ const getOrderByID = async (req, res, next) => {
   const orderID = req.params.oid
   let order;
   try {
-    order = await Order.findById(orderID);
+    order = await Order.findById(orderID).populate('hq').populate('branch');
   } catch (err) {
     const error = new HttpError(
       'Fetching Order failed, could not find Order.',
@@ -56,6 +56,7 @@ const getOrderByID = async (req, res, next) => {
     );
     return next(error);
   }
+  console.log(order)
   res.json({order : order.toObject({ getters: true }) });
 };
 
@@ -70,9 +71,9 @@ const createOrder = async (req, res, next) => {
   const { _id, user, info} = req.body;
 
   var userHQ = await User.findById(user).populate('hq')
-  userHQ = userHQ.hq.name
-  var userBranch = await Branch.find({users: { $all: [user] } })
-  userBranch = userBranch[0].name
+  userHQ = userHQ.hq._id
+  var userBranch = await User.findById(user).populate('branch')
+  userBranch = userBranch.branch._id
 
   var dateFormatted = new Date();
 

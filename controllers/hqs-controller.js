@@ -142,8 +142,6 @@ const deleteHQ = async (req, res, next) => {
   let garmentsToRemoveFromHQ;
   try {
     hq = await HQ.findById(hqID);
-    // branchesToRemoveFromHQ = await Branch.find( { hq: hqID }  )
-    // usersToRemoveFromHQ = await User.find( { hq: hqID }  )
     garmentsToRemoveFromHQ = await Garment.find( { hqs: { $all: [hqID]} }  )
   } catch (err) {
     const error = new HttpError(

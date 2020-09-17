@@ -142,7 +142,7 @@ const deleteBranchFromHqID = async (req, res, next) => {
   let branchName;
   try {
     branch = await Branch.findById(branchId).populate('hq');
-    branchName =  branch.name;
+    branchID =  branch._id;
   } catch (err) {
     const error = new HttpError(
       'Something went wrong, could not delete branch.',
@@ -163,7 +163,7 @@ const deleteBranchFromHqID = async (req, res, next) => {
     branch.hq.branches.pull(branch);
 
 
-    await User.deleteMany({branch: branchName})
+    await User.deleteMany({branch: branchID})
 
     await branch.hq.save({session: sess});
     await sess.commitTransaction();

@@ -66,7 +66,7 @@ const createUser = async (req, res, next) => {
   let branchMain
   try {
     hqMain = await HQ.findById(hq);
-    branchMain = await Branch.find({"name": branch});
+    branchMain = await Branch.findById(branch);
   } catch (err) {
     const error = new HttpError(
       `Creating user failed, please try again. + ${err}`,
@@ -80,7 +80,7 @@ const createUser = async (req, res, next) => {
     return next(error);
   }
 
-  if (!branchMain[0]) {
+  if (!branchMain) {
     const error = new HttpError('Could not find branch for provided id.', 404);
     return next(error);
   }
@@ -89,9 +89,9 @@ const createUser = async (req, res, next) => {
     const sess = await mongoose.startSession();
     sess.startTransaction();
     await createdUser.save(); 
-    branchMain[0].users.push(createdUser)
+    branchMain.users.push(createdUser)
     hqMain.users.push(createdUser)
-    await branchMain[0].save({session: sess })
+    await branchMain.save({session: sess })
     await hqMain.save({session: sess })
     await sess.commitTransaction();
   } catch (err) {
@@ -196,7 +196,8 @@ const getUsersByHqID = async (req, res, next) => {
   let hqWithUsers;
 
   try {
-    hqWithUsers = await HQ.findById(hqID).populate('users');
+    hqWithUsers = await User.find({hq: hqID}).populate('branch')
+    console.log(hqWithUsers)
   } catch (err) {
     const error = new HttpError(
       `Fetching users failed, try again later. + ${err} `,
@@ -210,7 +211,7 @@ const getUsersByHqID = async (req, res, next) => {
   //     new HttpError('Could not find users for the provided HQ id.', 404)
   //   );
   // }
-  res.json({ users: hqWithUsers.users.map(user => user.toObject({ getters: true })) });
+  res.json({ users: hqWithUsers.map(user => user.toObject({ getters: true })) });
 };
 
 
@@ -262,12 +263,8 @@ const deleteUserFromHqID = async (req, res, next) => {
   const userId = req.params.uid;
 
   let user;
-  let branch;
   try {
-    branch = await Branch.find({users: { $all: [userId] } })
-    user = await User.findById(userId).populate('hq')
-
-
+    user = await User.findById(userId).populate('hq').populate('branch')
   } catch (err) {
     const error = new HttpError(
       `Something went wrong, could not delete user. + ${err}`,
@@ -287,10 +284,10 @@ const deleteUserFromHqID = async (req, res, next) => {
     await user.remove({session: sess});
 
     user.hq.users.pull(user);
-    branch[0].users.pull(user)
+    user.branch.users.pull(user);
 
     await user.hq.save({session: sess});
-    branch[0].save({session: sess})
+    await user.branch.save({session: sess});
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(

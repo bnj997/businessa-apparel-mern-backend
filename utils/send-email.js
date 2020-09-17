@@ -6,8 +6,8 @@ require('dotenv').config();
 const sendEmail = async (from, to, order, cart, address) => {
   // Generate test SMTP service account from ethereal.email
   // Only needed if you don't have a real mail account for testing
-  let testAccount = await nodemailer.createTestAccount();
-  console.log('testAccount', testAccount)
+  // let testAccount = await nodemailer.createTestAccount();
+  // console.log('testAccount', testAccount)
 
   let totalPrice = 0.00
   for (var i = 0; i < cart.length; i++) {
@@ -16,13 +16,14 @@ const sendEmail = async (from, to, order, cart, address) => {
 
   const output = `
     <br></br>
-    <h3>Client ${order.user.username}</h3>
-    <p>HQ: ${order.hq}  </p>
-    <p>Branch: ${order.branch}  </p>
+    <h3>Client: ${order.user.username}</h3>
+    <br></br>
+    <p>HQ: ${order.hq.name}  </p>
+    <p>Branch: ${order.branch.name}  </p>
     <br></br>
     <h3>Order Date: ${order.date}</h3>
     <br></br>
-    <table align="left">
+    <table>
       <tr>
         <th style="padding: 10px; text-align: left">Name</th>
         <th style="padding: 10px; text-align: left">Colour</th>
@@ -66,15 +67,16 @@ const sendEmail = async (from, to, order, cart, address) => {
         <th style="padding: 10px; font-weight: bold">$${((totalPrice * 0.1) + totalPrice).toFixed(2)}</th>
       </tr>
     </table>
+    <hr align="left" style="width: 50%;">
     <br></br>
     <h3>Order Message: </h3>
     <p>${order.info}</p>
     <br></br>
     <h3>Shipping Details </h3>
-    <p>${address}</p>
+    <p>${order.branch.address}</p>
   `;
 
-  // create reusable transporter object using the default SMTP transport
+  //create reusable transporter object using the default SMTP transport
   // let transporter = nodemailer.createTransport({
   //   host: "mail.businessapparel.com.au",
   //   port: 465,
@@ -83,6 +85,9 @@ const sendEmail = async (from, to, order, cart, address) => {
   //     user: process.env.USER_EMAIL, // generated ethereal user
   //     pass: process.env.USER_PASSWORD, // generated ethereal password
   //   },
+  //   tls: {
+  //     rejectUnauthorized: false
+  //   }
   // });
 
   let transporter = nodemailer.createTransport({

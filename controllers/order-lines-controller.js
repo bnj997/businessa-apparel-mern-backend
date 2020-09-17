@@ -59,9 +59,8 @@ const createOrderline = async (req, res, next) => {
 
   //get order id, hq and branch
   let thisOrder;
-  let userBranchAddress
   try {
-    thisOrder = await Order.findById(order).populate('user');
+    thisOrder = await Order.findById(order).populate('user').populate('branch').populate('hq');
     console.log(thisOrder)
   } catch (err) {
     const error = new HttpError(

@@ -4,11 +4,11 @@ const { v4: uuidv4 } = require('uuid');
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 const HttpError = require('../models/http-error');
-const checkPermission = require('../utils/check-permission')
+const sendEmail = require('../utils/send-email')
 
 const Order = require('../models/order');
 const OrderLine = require('../models/order-line');
-const { privateDecrypt } = require('crypto');
+const Branch = require('../models/branch')
 
 
 
@@ -56,6 +56,23 @@ const createOrderline = async (req, res, next) => {
       return next(error);
     }
   }
+
+  //get order id, hq and branch
+  let thisOrder;
+  let userBranchAddress
+  try {
+    thisOrder = await Order.findById(order).populate('user');
+    console.log(thisOrder)
+  } catch (err) {
+    const error = new HttpError(
+      'Fetching Order failed, could not find Order.',
+      500
+    );
+    return next(error);
+  }
+
+  sendEmail('noreply@gmail.com', 'tom@businessapparel.com.au', thisOrder, cart)
+
   res.status(201).json({orderOfInterest: orderOfInterest.toObject({ getters: true }) });
 };
 

@@ -5,6 +5,7 @@ const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 const HttpError = require('../models/http-error');
 const checkPermission = require('../utils/check-permission')
+const sendEmail = require('../utils/send-email')
 
 const Order = require('../models/order');
 const User = require('../models/user')
@@ -100,6 +101,8 @@ const createOrder = async (req, res, next) => {
   }
   res.status(201).json({ order: createdOrder.toObject({ getters: true }) });
 };
+
+
 
 exports.createOrder = createOrder;
 exports.getOrdersByUser = getOrdersByUser;

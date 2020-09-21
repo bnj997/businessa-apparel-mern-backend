@@ -3,7 +3,7 @@ const nodemailer = require("nodemailer");
 require('dotenv').config();
 
 // async..await is not allowed in global scope, must use a wrapper
-const sendEmail = async (from, to, order, cart, address) => {
+const sendOrder = async (order, cart) => {
   // Generate test SMTP service account from ethereal.email
   // Only needed if you don't have a real mail account for testing
   // let testAccount = await nodemailer.createTestAccount();
@@ -76,45 +76,55 @@ const sendEmail = async (from, to, order, cart, address) => {
     <p>${order.branch.address}</p>
   `;
 
-  //create reusable transporter object using the default SMTP transport
-  // let transporter = nodemailer.createTransport({
-  //   host: "mail.businessapparel.com.au",
-  //   port: 465,
-  //   secure: true, // true for 465, false for other ports
-  //   auth: {
-  //     user: process.env.USER_EMAIL, // generated ethereal user
-  //     pass: process.env.USER_PASSWORD, // generated ethereal password
-  //   },
-  //   tls: {
-  //     rejectUnauthorized: false
-  //   }
-  // });
-
+  // create reusable transporter object using the default SMTP transport
   let transporter = nodemailer.createTransport({
-    host: "smtp.ethereal.email",
-    port: 587,
-    secure: false, // true for 465, false for other ports
+    host: "mail.businessapparel.com.au",
+    port: 465,
+    secure: true, // true for 465, false for other ports
     auth: {
-      user: 'bmqrboazqb6f3xui@ethereal.email', // generated ethereal user
-      pass: 'K2VB9CKsPYbAdErmCY', // generated ethereal password
+      user: process.env.USER_EMAIL, // generated ethereal user
+      pass: process.env.USER_PASSWORD, // generated ethereal password
     },
+    tls: {
+      rejectUnauthorized: false
+    }
   });
+
+  // let transporter = nodemailer.createTransport({
+  //   host: "smtp.ethereal.email",
+  //   port: 587,
+  //   secure: false, // true for 465, false for other ports
+  //   auth: {
+  //     user: 'bmqrboazqb6f3xui@ethereal.email', // generated ethereal user
+  //     pass: 'K2VB9CKsPYbAdErmCY', // generated ethereal password
+  //   },
+  // });
 
 
   // send mail with defined transport object
-  let info = await transporter.sendMail({
-    from: from, // sender address
-    to: to, // list of receivers
+  let admin = await transporter.sendMail({
+    from: 'tom@businessapparel.com.au', // sender address
+    to: 'bnj997@gmail.com', // list of receivers
     subject: `Order Received from ${order.user.username}`, // Subject line
     html: output, // html body
   });
 
-  console.log("Message sent: %s", info.messageId);
-  // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+
+  let client = await transporter.sendMail({
+    from: 'tom@businessapparel.com.au', // sender address
+    // to: order.user.email, // list of receivers
+    to: 'brendon.aung5@gmail.com',
+    subject: `Your order has been sent: ${order.user.username}  `, // Subject line
+    html: output, // html body
+  });
+
+  console.log("Message sent: %s", admin.messageId);
+  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(admin));
+
 
   // Preview only available when sending through an Ethereal account
-  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-  // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+  console.log("Message sent: %s", client.messageId);
+  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(client));
 }
 
-module.exports = sendEmail;
+module.exports = sendOrder;

@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 const HttpError = require('../models/http-error');
-const sendEmail = require('../utils/send-email')
+const sendOrder = require('../utils/send-order')
 
 const Order = require('../models/order');
 const OrderLine = require('../models/order-line');
@@ -61,7 +61,6 @@ const createOrderline = async (req, res, next) => {
   let thisOrder;
   try {
     thisOrder = await Order.findById(order).populate('user').populate('branch').populate('hq');
-    console.log(thisOrder)
   } catch (err) {
     const error = new HttpError(
       'Fetching Order failed, could not find Order.',
@@ -70,9 +69,17 @@ const createOrderline = async (req, res, next) => {
     return next(error);
   }
 
-  sendEmail('noreply@gmail.com', 'tom@businessapparel.com.au', thisOrder, cart)
+  try {
+    sendOrder(thisOrder, cart)
+  } catch (err) {
+    const error = new HttpError(
+      'Sending order failed, please try again.',
+      500
+    );
+    return next(error);
+  }
 
-  res.status(201).json({orderOfInterest: orderOfInterest.toObject({ getters: true }) });
+  res.status(201).send(true);
 };
 
 
@@ -98,7 +105,7 @@ const getOrderlinesByOrder = async (req, res, next) => {
     );
   }
 
-  res.json({ orderlines: orderWithOrderlines.orderlines.map(orderline => orderline.toObject({ getters: true })) });
+  res.status(201).json({ orderlines: orderWithOrderlines.orderlines.map(orderline => orderline.toObject({ getters: true })) });
 };
 
 

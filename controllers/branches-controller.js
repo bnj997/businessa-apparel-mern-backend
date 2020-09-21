@@ -88,6 +88,27 @@ const getBranchesByHqID = async (req, res, next) => {
   res.json({ branches: hqWithBranches.branches.map(branch => branch.toObject({ getters: true })) });
 };
 
+const getBranchByUserID = async (req, res, next) => {
+
+  const userID = req.params.uid
+  let userHQ;
+  let userImage;
+
+
+  try {
+    userBranch = await User.findById(userID).populate('branch').populate('hq');
+  } catch (err) {
+    const error = new HttpError(
+      `Fetching branch for user failed, try again later. + ${err} `,
+      500
+    );
+    return next(error);
+  }
+
+  res.json({ userBranch: userBranch.toObject({ getters: true }) });
+};
+
+
 
 const updateBranch = async (req, res, next) => {
   checkPermission(req.userData.username, next);
@@ -180,6 +201,7 @@ const deleteBranchFromHqID = async (req, res, next) => {
 };
 
 exports.getBranchesByHqID = getBranchesByHqID;
+exports.getBranchByUserID = getBranchByUserID;
 exports.createBranch = createBranch;
 exports.updateBranch = updateBranch;
 exports.deleteBranchFromHqID = deleteBranchFromHqID;

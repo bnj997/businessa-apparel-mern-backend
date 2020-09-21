@@ -11,7 +11,6 @@ const orderSchema = new Schema({
   user: { type: String, required: true, ref: 'User' },
   info: { type: String},
   orderlines: [{type: String, required: true, ref: 'Order-Lines'}],
-  status: {type: String, required: true }
 });
 
 orderSchema.plugin(uniqueValidator);

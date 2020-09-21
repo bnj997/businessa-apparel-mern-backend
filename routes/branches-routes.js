@@ -9,6 +9,7 @@ const router = express.Router();
 router.use(checkAuth);
 
 router.get('/:hid', branchesController.getBranchesByHqID);
+router.get('/user/:uid', branchesController.getBranchByUserID);
 
 router.post(
   '/:hid',

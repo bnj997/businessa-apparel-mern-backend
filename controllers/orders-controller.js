@@ -5,11 +5,10 @@ const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 const HttpError = require('../models/http-error');
 const checkPermission = require('../utils/check-permission')
-const sendEmail = require('../utils/send-email')
+const sendEnquiryForm = require('../utils/send-enquiry')
 
 const Order = require('../models/order');
 const User = require('../models/user')
-const Branch = require('../models/branch')
 
 
 const getOrders = async (req, res, next) => {
@@ -56,7 +55,6 @@ const getOrderByID = async (req, res, next) => {
     );
     return next(error);
   }
-  console.log(order)
   res.json({order : order.toObject({ getters: true }) });
 };
 
@@ -85,7 +83,6 @@ const createOrder = async (req, res, next) => {
     user,
     info,
     orderlines: [],
-    status: "New",
   });
 
   try {
@@ -104,8 +101,33 @@ const createOrder = async (req, res, next) => {
 };
 
 
+const sendEnquiry = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(
+      new HttpError('Invalid inputs passed, please check your data.', 422)
+    );
+  }
+
+  const {name, email, organisation , message} = req.body;
+
+  try {
+    sendEnquiryForm(name, email, organisation, message);
+  } catch (err) {
+    const error = new HttpError(
+      'Sending form failed, please try again.',
+      500
+    );
+    return next(error);
+  }
+  res.status(201).send(true);
+};
+
+
+
 
 exports.createOrder = createOrder;
 exports.getOrdersByUser = getOrdersByUser;
 exports.getOrders = getOrders;
 exports.getOrderByID = getOrderByID;
+exports.sendEnquiry = sendEnquiry;

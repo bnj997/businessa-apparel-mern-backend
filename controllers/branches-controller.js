@@ -80,20 +80,12 @@ const getBranchesByHqID = async (req, res, next) => {
     return next(error);
   }
 
-  // if (!hqWithBranches || hqWithBranches.branches.length === 0) {
-  //   return next(
-  //     new HttpError('Could not find branches for the provided HQ id.', 404)
-  //   );
-  // }
   res.json({ branches: hqWithBranches.branches.map(branch => branch.toObject({ getters: true })) });
 };
 
 const getBranchByUserID = async (req, res, next) => {
 
   const userID = req.params.uid
-  let userHQ;
-  let userImage;
-
 
   try {
     userBranch = await User.findById(userID).populate('branch').populate('hq');

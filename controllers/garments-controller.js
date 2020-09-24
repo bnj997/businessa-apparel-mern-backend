@@ -54,6 +54,7 @@ const getGarmentsByHqID = async (req, res, next) => {
 };
 
 const getGarmentsByUserID = async (req, res, next) => {
+
   const userID = req.userData.userId
   let usersHQ;
 

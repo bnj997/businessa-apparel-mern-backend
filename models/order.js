@@ -5,12 +5,12 @@ const Schema = mongoose.Schema;
 
 const orderSchema = new Schema({
   _id: {type: String, required: true},
-  date: { type: Date, required: true},
+  date: { type: String, required: true},
   hq:  {type: String, required: true, ref: "HQ"},
   branch:  {type: String, required: true, ref: "Branch"},
   user: { type: String, required: true, ref: 'User' },
   info: { type: String},
-  orderlines: [{type: String, required: true, ref: 'Order-Lines'}],
+  orderlines: [{type: String, required: true, ref: 'Order-Lines'}]
 });
 
 orderSchema.plugin(uniqueValidator);

@@ -55,6 +55,7 @@ const getOrderByID = async (req, res, next) => {
     );
     return next(error);
   }
+
   res.json({order : order.toObject({ getters: true }) });
 };
 
@@ -73,11 +74,12 @@ const createOrder = async (req, res, next) => {
   var userBranch = await User.findById(user).populate('branch')
   userBranch = userBranch.branch._id
 
-  var dateFormatted = new Date();
+  var date = new Date();
+  var dateString = `${date.toDateString()}, ${date.toLocaleTimeString()}`
 
   const createdOrder = new Order({
     _id,
-    date: dateFormatted,
+    date: dateString,
     hq: userHQ,
     branch: userBranch,
     user,

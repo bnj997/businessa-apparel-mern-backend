@@ -74,9 +74,18 @@ const sendOrder = async (order, cart) => {
     <br></br>
     <h3>Shipping Details </h3>
     <p>${order.branch.address}</p>
+    <br></br>
+    <p>Thank you for ordering from Business Apparel.</p>
+    <br></br>
+    <p>Kind Regards,</p>
+    <br></br>
+    <img src="cid:unique@cid"/>
+    <p style="font-weight: bold;">Tom Gilmour</p>
+    <p style="font-weight: bold;"> 0439 447 400 </p>
+    <p>https://www.businessapparel.com.au </p>
   `;
 
-  // create reusable transporter object using the default SMTP transport
+  //create reusable transporter object using the default SMTP transport
   let transporter = nodemailer.createTransport({
     host: "mail.businessapparel.com.au",
     port: 465,
@@ -107,6 +116,13 @@ const sendOrder = async (order, cart) => {
     to: 'bnj997@gmail.com', // list of receivers
     subject: `Order Received from ${order.user.username}`, // Subject line
     html: output, // html body
+    attachments: [
+      {
+        filename: 'balogo.jpg',
+        path: __dirname + '/balogo.jpg',
+        cid: 'unique@cid'
+      },
+    ]
   });
 
 
@@ -114,8 +130,15 @@ const sendOrder = async (order, cart) => {
     from: 'tom@businessapparel.com.au', // sender address
     // to: order.user.email, // list of receivers
     to: 'brendon.aung5@gmail.com',
-    subject: `Your order has been sent: ${order.user.username}  `, // Subject line
+    subject: `Your order has been sent and received: ${order.user.username}  `, // Subject line
     html: output, // html body
+    attachments: [
+      {
+        filename: 'balogo.jpg',
+        path: __dirname + '/balogo.jpg',
+        cid: 'unique@cid'
+      },
+    ]
   });
 
   console.log("Message sent: %s", admin.messageId);

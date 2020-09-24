@@ -197,7 +197,6 @@ const getUsersByHqID = async (req, res, next) => {
 
   try {
     hqWithUsers = await User.find({hq: hqID}).populate('branch')
-    console.log(hqWithUsers)
   } catch (err) {
     const error = new HttpError(
       `Fetching users failed, try again later. + ${err} `,
@@ -206,11 +205,6 @@ const getUsersByHqID = async (req, res, next) => {
     return next(error);
   }
 
-  // if (!hqWithUsers || hqWithUsers.users.length === 0) {
-  //   return next(
-  //     new HttpError('Could not find users for the provided HQ id.', 404)
-  //   );
-  // }
   res.json({ users: hqWithUsers.map(user => user.toObject({ getters: true })) });
 };
 

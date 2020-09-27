@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 const HttpError = require('../models/http-error');
@@ -8,6 +6,14 @@ const checkPermission = require('../utils/check-permission')
 const Garment = require('../models/garment');
 const HQ = require('../models/hq');
 const User = require('../models/user');
+
+const aws = require('aws-sdk');
+aws.config.update({
+  secretAccessKey: process.env.SECRET_ACCESS_KEY,
+  accessKeyId: process.env.ACCESS_KEY_ID,
+  region: process.env.REGION
+})
+const s3 = new aws.S3();
 
 
 const getAllGarments = async (req, res, next) => {
@@ -53,6 +59,8 @@ const getGarmentsByHqID = async (req, res, next) => {
   res.json({ garments: hqWithGarments.garments.map(garment => garment.toObject({ getters: true })) });
 };
 
+
+
 const getGarmentsByUserID = async (req, res, next) => {
 
   const userID = req.userData.userId
@@ -77,6 +85,7 @@ const getGarmentsByUserID = async (req, res, next) => {
 
   res.json({ garments: hqWithGarments.garments.map(garment => garment.toObject({ getters: true })) });
 };
+
 
 const getAvailableGarmentsByHqID = async (req, res, next) => {
   checkPermission(req.userData.username, next);
@@ -117,7 +126,7 @@ const createGarment = async (req, res, next) => {
   const { _id, styleNum, name, price, category, supplier, description, colours, sizes} = req.body;
   const createdGarment = new Garment({
     _id,
-    image: req.file.path,
+    image: req.file.location,
     styleNum,
     name,
     price,
@@ -143,7 +152,6 @@ const createGarment = async (req, res, next) => {
   }
   res.status(201).json({ garment: createdGarment.toObject({ getters: true }) });
 };
-
 
 
 
@@ -219,14 +227,21 @@ const updateGarment = async (req, res, next) => {
     );
     return next(error);
   }
-  
+
   if (req.file !== undefined) {
-    const imagePath = garment.image;
-    fs.unlink(imagePath, err => {
-      console.log(err);
+    const imageLocation = garment.image.replace('https://business-apparel.s3.ap-southeast-2.amazonaws.com/','');
+    var params = {
+      Bucket: "business-apparel", 
+      Key: imageLocation
+    };
+    s3.deleteObject(params, function(err, data) {
+      if (err) console.log(err, err.stack); // an error occurred
+      else     console.log(data);           // successful response
     });
-    garment.image = req.file.path
+    garment.image = req.file.location
   };
+
+
   garment.styleNum = styleNum;
   garment.name = name;
   garment.price = price;
@@ -273,7 +288,7 @@ const deleteGarment = async (req, res, next) => {
     return next(error);
   }
 
-  const imagePath = garment.image;
+  const imageLocation = garment.image.replace('https://business-apparel.s3.ap-southeast-2.amazonaws.com/','');
 
   try {
     const sess = await mongoose.startSession();
@@ -294,8 +309,13 @@ const deleteGarment = async (req, res, next) => {
     return next(error);
   }
 
-  fs.unlink(imagePath, err => {
-    console.log(err);
+  var params = {
+    Bucket: "business-apparel", 
+    Key: imageLocation
+  };
+  s3.deleteObject(params, function(err, data) {
+    if (err) console.log(err, err.stack); // an error occurred
+    else     console.log(data);           // successful response
   });
   
   res.status(200).json({ message: 'Deleted garment.' });

@@ -11,6 +11,15 @@ const User = require('../models/user');
 const Branch = require('../models/branch');
 const HQ = require('../models/hq');
 
+const aws = require('aws-sdk');
+aws.config.update({
+  secretAccessKey: process.env.SECRET_ACCESS_KEY,
+  accessKeyId: process.env.ACCESS_KEY_ID,
+  region: process.env.REGION
+})
+const s3 = new aws.S3();
+
+
 const getAllHQs = async (req, res, next) => {
   checkPermission(req.userData.username, next);
 
@@ -60,7 +69,7 @@ const createHQ = async (req, res, next) => {
   const { _id, name, telephone, email} = req.body;
   const createdHQ = new HQ({
     _id,
-    image: req.file.path,
+    image: req.file.location,
     name,
     telephone,
     email,
@@ -109,12 +118,18 @@ const updateHQ = async (req, res, next) => {
 
   //if you updated image
   if (req.file !== undefined) {
-    const imagePath = hq.image;
-    fs.unlink(imagePath, err => {
-      console.log(err);
+    const imageLocation = hq.image.replace('https://business-apparel.s3.ap-southeast-2.amazonaws.com/','');
+    var params = {
+      Bucket: "business-apparel", 
+      Key: imageLocation
+    };
+    s3.deleteObject(params, function(err, data) {
+      if (err) console.log(err, err.stack); // an error occurred
+      else     console.log(data);           // successful response
     });
-    hq.image = req.file.path
+    hq.image = req.file.location
   };
+
   hq.name = name;
   hq.telephone = telephone;
   hq.email = email;
@@ -156,7 +171,7 @@ const deleteHQ = async (req, res, next) => {
     return next(error);
   }
 
-  const imagePath = hq.image;
+  const imageLocation = hq.image.replace('https://business-apparel.s3.ap-southeast-2.amazonaws.com/','');
 
   try {
     const sess = await mongoose.startSession();
@@ -182,9 +197,15 @@ const deleteHQ = async (req, res, next) => {
     return next(error);
   }
 
-  fs.unlink(imagePath, err => {
-    console.log(err);
+  var params = {
+    Bucket: "business-apparel", 
+    Key: imageLocation
+  };
+  s3.deleteObject(params, function(err, data) {
+    if (err) console.log(err, err.stack); // an error occurred
+    else     console.log(data);           // successful response
   });
+ 
   
   res.status(200).json({ message: 'Deleted hq.' });
 };

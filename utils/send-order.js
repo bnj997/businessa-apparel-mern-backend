@@ -109,6 +109,20 @@ const sendOrder = async (order, cart) => {
   //   },
   // });
 
+  let client = await transporter.sendMail({
+    from: 'tom@businessapparel.com.au', // sender address
+    // to: order.user.email, // list of receivers
+    to: 'brendon.aung5@gmail.com',
+    subject: `Your order has been sent and received: ${order.user.username}  `, // Subject line
+    html: output, // html body
+    attachments: [
+      {
+        filename: 'balogo.jpg',
+        path: __dirname + '/balogo.jpg',
+        cid: 'unique@cid'
+      },
+    ]
+  });
 
   // send mail with defined transport object
   let admin = await transporter.sendMail({
@@ -125,29 +139,13 @@ const sendOrder = async (order, cart) => {
     ]
   });
 
-
-  let client = await transporter.sendMail({
-    from: 'tom@businessapparel.com.au', // sender address
-    // to: order.user.email, // list of receivers
-    to: 'brendon.aung5@gmail.com',
-    subject: `Your order has been sent and received: ${order.user.username}  `, // Subject line
-    html: output, // html body
-    attachments: [
-      {
-        filename: 'balogo.jpg',
-        path: __dirname + '/balogo.jpg',
-        cid: 'unique@cid'
-      },
-    ]
-  });
+  // Preview only available when sending through an Ethereal account
+  console.log("Message sent: %s", client.messageId);
+  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(client));
 
   console.log("Message sent: %s", admin.messageId);
   console.log("Preview URL: %s", nodemailer.getTestMessageUrl(admin));
 
-
-  // Preview only available when sending through an Ethereal account
-  console.log("Message sent: %s", client.messageId);
-  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(client));
 }
 
 module.exports = sendOrder;

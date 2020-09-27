@@ -14,34 +14,34 @@ const sendEnquiryForm = async (name, email, organisation, message) => {
     <br></br>
   `;
   //create reusable transporter object using the default SMTP transport
-  // let transporter = nodemailer.createTransport({
-  //   host: "mail.businessapparel.com.au",
-  //   port: 465,
-  //   secure: true, // true for 465, false for other ports
-  //   auth: {
-  //     user: process.env.USER_EMAIL, // generated ethereal user
-  //     pass: process.env.USER_PASSWORD, // generated ethereal password
-  //   },
-  //   tls: {
-  //     rejectUnauthorized: false
-  //   }
-  // });
-
   let transporter = nodemailer.createTransport({
-    host: "smtp.ethereal.email",
-    port: 587,
-    secure: false, // true for 465, false for other ports
+    host: "mail.businessapparel.com.au",
+    port: 465,
+    secure: true, // true for 465, false for other ports
     auth: {
-      user: 'bmqrboazqb6f3xui@ethereal.email', // generated ethereal user
-      pass: 'K2VB9CKsPYbAdErmCY', // generated ethereal password
+      user: process.env.USER_EMAIL, // generated ethereal user
+      pass: process.env.USER_PASSWORD, // generated ethereal password
     },
+    tls: {
+      rejectUnauthorized: false
+    }
   });
+
+  // let transporter = nodemailer.createTransport({
+  //   host: "smtp.ethereal.email",
+  //   port: 587,
+  //   secure: false, // true for 465, false for other ports
+  //   auth: {
+  //     user: 'bmqrboazqb6f3xui@ethereal.email', // generated ethereal user
+  //     pass: 'K2VB9CKsPYbAdErmCY', // generated ethereal password
+  //   },
+  // });
 
 
   // send mail with defined transport object
   let info = await transporter.sendMail({
-    from: 'noreply@gmail', // sender address
-    to: 'info@businessapparel.com.au', // list of receivers
+    from: 'tom@businessapparel.com.au', // sender address
+    to: 'bnj997@gmail.com', // list of receivers
     subject: `New Enquiry from ${name}`, // Subject line
     html: output, // html body
   });

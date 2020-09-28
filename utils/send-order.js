@@ -33,14 +33,14 @@ const sendOrder = async (order, cart) => {
         <th style="padding: 10px; text-align: left">Subtotal</th>
       </tr>
       ${cart.map(line => (
-        `<tr>
+        <tr>
           <td style="padding: 10px">${line.name}</td>
           <td style="padding: 10px">${line.colour}</td>
           <td style="padding: 10px">${line.size}</td>
           <td style="padding: 10px">$${line.price.toFixed(2)}</td>
           <td style="padding: 10px">${line.quantity}</td>
           <td style="padding: 10px">$${line.subtotal.toFixed(2)}</td>
-        </tr>`
+        </tr>
       ))}
       <tr>
         <th style="padding: 10px; font-weight: bold; text-align: left">Subtotal: </th>

@@ -41,7 +41,7 @@ const sendOrder = async (order, cart) => {
           <td style="padding: 10px">${line.quantity}</td>
           <td style="padding: 10px">$${line.subtotal.toFixed(2)}</td>
         </tr>`
-      ))}
+      ))
       `<tr>
         <th style="padding: 10px; font-weight: bold; text-align: left">Subtotal: </th>
         <th style="padding: 10px"></th>

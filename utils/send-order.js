@@ -31,8 +31,8 @@ const sendOrder = async (order, cart) => {
         <th style="padding: 10px; text-align: left">Price</th>
         <th style="padding: 10px; text-align: left">Qty</th>
         <th style="padding: 10px; text-align: left">Subtotal</th>
-      </tr>
-      ${cart.map(line => (
+      </tr>`
+      cart.map(line => (
         `<tr>
           <td style="padding: 10px">${line.name}</td>
           <td style="padding: 10px">${line.colour}</td>
@@ -42,7 +42,7 @@ const sendOrder = async (order, cart) => {
           <td style="padding: 10px">$${line.subtotal.toFixed(2)}</td>
         </tr>`
       ))}
-      <tr>
+      `<tr>
         <th style="padding: 10px; font-weight: bold; text-align: left">Subtotal: </th>
         <th style="padding: 10px"></th>
         <th style="padding: 10px"></th>

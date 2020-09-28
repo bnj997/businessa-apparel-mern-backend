@@ -1,4 +1,4 @@
-const { v4: uuidv4 } = require('uuid');
+require('dotenv').config();
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -106,7 +106,7 @@ const createUser = async (req, res, next) => {
   try {
     token = jwt.sign(
       { userId: createdUser._id, username: createdUser.username },
-      'supersecret_dont_share',
+      process.env.JWT_KEY,
       { expiresIn: '1h' }
     );
   } catch (err) {
@@ -136,10 +136,10 @@ const login = async (req, res, next) => {
     return next(error);
   }
 
-  if (!existingUser || existingUser.password !== password) {
+  if (!existingUser) {
     const error = new HttpError(
       'Invalid credentials, could not log you in.',
-      401
+      403
     );
     return next(error);
   }
@@ -168,7 +168,7 @@ const login = async (req, res, next) => {
   try {
     token = jwt.sign(
       { userId: existingUser._id, username: existingUser.username },
-      'supersecret_dont_share',
+      process.env.JWT_KEY,
       { expiresIn: '1h' }
     );
   } catch (err) {

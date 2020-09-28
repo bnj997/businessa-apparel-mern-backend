@@ -189,7 +189,7 @@ const login = async (req, res, next) => {
 
 
 const getUsersByHqID = async (req, res, next) => {
-  checkPermission(req.userData.username, next);
+  // checkPermission(req.userData.username, next);
 
   const hqID = req.params.hid
   let hqWithUsers;
@@ -209,7 +209,7 @@ const getUsersByHqID = async (req, res, next) => {
 
 
 const updateUser = async (req, res, next) => {
-  checkPermission(req.userData.username, next);
+  //checkPermission(req.userData.username, next);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
@@ -251,7 +251,7 @@ const updateUser = async (req, res, next) => {
 
 
 const deleteUserFromHqID = async (req, res, next) => {
-  checkPermission(req.userData.username, next);
+ // checkPermission(req.userData.username, next);
 
   const userId = req.params.uid;
 

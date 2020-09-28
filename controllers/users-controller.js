@@ -12,7 +12,7 @@ const Branch = require('../models/branch');
 const HQ = require('../models/hq');
 
 const createUser = async (req, res, next) => {
-  checkPermission(req.userData.username, next);
+  //checkPermission(req.userData.username, next);
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

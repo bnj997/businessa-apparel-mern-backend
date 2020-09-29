@@ -50,12 +50,6 @@ const getGarmentsByHqID = async (req, res, next) => {
     return next(error);
   }
 
-  // if (!hqWithGarments || hqWithGarments.garments.length === 0) {
-  //   return next(
-  //     new HttpError('Could not find garments for the provided HQ id.', 404)
-  //   );
-  // }
-
   res.json({ garments: hqWithGarments.garments.map(garment => garment.toObject({ getters: true })) });
 };
 
@@ -104,12 +98,6 @@ const getAvailableGarmentsByHqID = async (req, res, next) => {
     return next(error);
   }
 
-  // if (!garmentsAvailableForHQ || garmentsAvailableForHQ.length === 0) {
-  //   return next(
-  //     new HttpError('Could not find available garments for the provided HQ id.', 404)
-  //   );
-  // }
-
   res.json({ garments: garmentsAvailableForHQ.map(garment => garment.toObject({ getters: true })) });
 };
 
@@ -126,7 +114,7 @@ const createGarment = async (req, res, next) => {
   const { _id, styleNum, name, price, category, supplier, description, colours, sizes} = req.body;
   const createdGarment = new Garment({
     _id,
-    image: req.file.location,
+    image: req.file.transforms[0].location,
     styleNum,
     name,
     price,
@@ -145,7 +133,7 @@ const createGarment = async (req, res, next) => {
     await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
-      'Creating Garment failed, please try again.',
+      `Creating Garment failed, please try again. + ${err} `,
       500
     );
     return next(error);
@@ -201,9 +189,6 @@ const addGarmentsToHqID = async (req, res, next) => {
 
 
 
-
-
-
 const updateGarment = async (req, res, next) => {
   checkPermission(req.userData.username, next);
 
@@ -238,7 +223,7 @@ const updateGarment = async (req, res, next) => {
       if (err) console.log(err, err.stack); // an error occurred
       else     console.log(data);           // successful response
     });
-    garment.image = req.file.location
+    garment.image = req.file.transforms[0].location
   };
 
 
@@ -315,7 +300,6 @@ const deleteGarment = async (req, res, next) => {
   };
   s3.deleteObject(params, function(err, data) {
     if (err) console.log(err, err.stack); // an error occurred
-    else     console.log(data);           // successful response
   });
   
   res.status(200).json({ message: 'Deleted garment.' });

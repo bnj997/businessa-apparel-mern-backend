@@ -60,16 +60,19 @@ const getHQById = async (req, res, next) => {
 const createHQ = async (req, res, next) => {
   checkPermission(req.userData.username, next);
 
+  
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
       new HttpError('Invalid inputs passed, please check your data.', 422)
     );
   }
+
   const { _id, name, telephone, email} = req.body;
   const createdHQ = new HQ({
     _id,
-    image: req.file.location,
+    image: req.file.transforms[0].location,
     name,
     telephone,
     email,
@@ -127,7 +130,7 @@ const updateHQ = async (req, res, next) => {
       if (err) console.log(err, err.stack); // an error occurred
       else     console.log(data);           // successful response
     });
-    hq.image = req.file.location
+    hq.image = req.file.transforms[0].location
   };
 
   hq.name = name;

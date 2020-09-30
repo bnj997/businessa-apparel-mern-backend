@@ -218,6 +218,7 @@ const updateUser = async (req, res, next) => {
   }
   const {branch, username, email, password} = req.body;
   const userId = req.params.uid;
+  
 
   let user;
   try {
@@ -230,10 +231,21 @@ const updateUser = async (req, res, next) => {
     return next(error);
   }
 
+  let hashedPassword;
+  try {
+    hashedPassword = await bcrypt.hash(password, 12)
+  } catch(err) {
+    const error = new HttpError(
+      'Could not create user, please try again.',
+      500
+    );
+    return next(error)
+  }
+
   user.branch = branch;
   user.username = username;
   user.email = email;
-  user.password = password;
+  user.password = hashedPassword;
 
   try {
     await user.save();

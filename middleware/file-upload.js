@@ -35,7 +35,7 @@ const fileUpload = multer({
         cb(null, uuidv4() + '.' + 'jpeg');
       },
       transform: function (req, file, cb) {
-        cb(null, sharp().resize(200, 250, {fit: 'contain', background: {r: 255, g: 255, b: 255} }).jpeg({quality: 80, chromaSubsampling: '4:4:4'}))
+        cb(null, sharp().resize(250, 300, {fit: 'contain', background: {r: 255, g: 255, b: 255} }).jpeg({quality: 90, chromaSubsampling: '4:4:4'}))
       }
     }],
     key: (req, file, cb) => {

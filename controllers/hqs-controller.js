@@ -8,6 +8,7 @@ const checkPermission = require('../utils/check-permission')
 
 const Garment = require('../models/garment');
 const User = require('../models/user');
+const Order = require('../models/order');
 const Branch = require('../models/branch');
 const HQ = require('../models/hq');
 
@@ -61,7 +62,6 @@ const createHQ = async (req, res, next) => {
   checkPermission(req.userData.username, next);
 
   
-
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
@@ -69,11 +69,12 @@ const createHQ = async (req, res, next) => {
     );
   }
 
-  const { _id, name, telephone, email} = req.body;
+  const { _id, name, address, telephone, email} = req.body;
   const createdHQ = new HQ({
     _id,
     image: req.file.transforms[0].location,
     name,
+    address,
     telephone,
     email,
     garments: []
@@ -105,7 +106,7 @@ const updateHQ = async (req, res, next) => {
     );
   }
 
-  const { name, telephone, email } = req.body;
+  const { name, address, telephone, email } = req.body;
   const hqID = req.params.hid;
 
   let hq;
@@ -134,6 +135,7 @@ const updateHQ = async (req, res, next) => {
   };
 
   hq.name = name;
+  hq.address = address;
   hq.telephone = telephone;
   hq.email = email;
 
@@ -181,6 +183,7 @@ const deleteHQ = async (req, res, next) => {
     sess.startTransaction();
     await User.deleteMany({hq: hqID})
     await Branch.deleteMany({hq: hqID})
+    await Order.deleteMany({hq: hqID})
     await hq.remove({session: sess});
 
 

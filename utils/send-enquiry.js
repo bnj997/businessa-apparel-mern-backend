@@ -27,31 +27,18 @@ const sendEnquiryForm = async (name, email, organisation, message) => {
     }
   });
 
-  // let transporter = nodemailer.createTransport({
-  //   host: "smtp.ethereal.email",
-  //   port: 587,
-  //   secure: false, // true for 465, false for other ports
-  //   auth: {
-  //     user: 'bmqrboazqb6f3xui@ethereal.email', // generated ethereal user
-  //     pass: 'K2VB9CKsPYbAdErmCY', // generated ethereal password
-  //   },
-  // });
-
-
+  
   // send mail with defined transport object
   let info = await transporter.sendMail({
     from: 'tom@businessapparel.com.au', // sender address
-    to: 'bnj997@gmail.com', // list of receivers
+    to: 'info@businessapparel.com.au', // list of receivers
     subject: `New Enquiry from ${name}`, // Subject line
     html: output, // html body
   });
 
   console.log("Message sent: %s", info.messageId);
-  // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
-
-  // Preview only available when sending through an Ethereal account
   console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-  // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+
 }
 
 module.exports = sendEnquiryForm;

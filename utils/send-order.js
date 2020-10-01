@@ -2,13 +2,7 @@
 const nodemailer = require("nodemailer");
 require('dotenv').config();
 
-// async..await is not allowed in global scope, must use a wrapper
 const sendOrder = async (order, cart) => {
-  // Generate test SMTP service account from ethereal.email
-  // Only needed if you don't have a real mail account for testing
-  // let testAccount = await nodemailer.createTestAccount();
-  // console.log('testAccount', testAccount)
-
   let totalPrice = 0.00
   for (var i = 0; i < cart.length; i++) {
     totalPrice = totalPrice + cart[i].subtotal;
@@ -102,20 +96,9 @@ const sendOrder = async (order, cart) => {
     }
   });
 
-  // let transporter = nodemailer.createTransport({
-  //   host: "smtp.ethereal.email",
-  //   port: 587,
-  //   secure: false, // true for 465, false for other ports
-  //   auth: {
-  //     user: 'bmqrboazqb6f3xui@ethereal.email', // generated ethereal user
-  //     pass: 'K2VB9CKsPYbAdErmCY', // generated ethereal password
-  //   },
-  // });
-
   let client = await transporter.sendMail({
     from: 'tom@businessapparel.com.au', // sender address
-    // to: order.user.email, // list of receivers
-    to: 'brendon.aung5@gmail.com',
+    to: order.user.email,
     subject: `Your order has been sent and received: ${order.user.username}  `, // Subject line
     html: output, // html body
     attachments: [
@@ -130,7 +113,7 @@ const sendOrder = async (order, cart) => {
   // send mail with defined transport object
   let admin = await transporter.sendMail({
     from: 'tom@businessapparel.com.au', // sender address
-    to: 'bnj997@gmail.com', // list of receivers
+    to: 'tom@businessapparel.com.au', // list of receivers
     subject: `Order Received from ${order.user.username}`, // Subject line
     html: output, // html body
     attachments: [

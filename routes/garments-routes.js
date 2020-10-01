@@ -89,36 +89,4 @@ router.get('/user/:uid', garmentsController.getGarmentsByUserID)
 
 router.get('/hq/:hqid/available', garmentsController.getAvailableGarmentsByHqID)
 
-// router.post(
-//   '/hq/:hqid/:gid',
-//   [
-//     check('_id')
-//       .not()
-//       .isEmpty(),
-//     check('styleNum')
-//       .not()
-//       .isEmpty(),
-//     check('name')
-//       .not()
-//       .isEmpty(),
-//     check('price')
-//       .isNumeric(),
-//     check('supplier')
-//       .not()
-//       .isEmpty(),
-//     check('description')
-//       .not()
-//       .isEmpty(),
-//     check('colors')
-//       .not()
-//       .isEmpty(),
-//     check('sizes')
-//       .not()
-//       .isEmpty(),
-//   ],
-//   garmentsController.addGarmentToHqID
-// );
-
-// router.delete('/:hqid/:gid', garmentsController.removeGarmentfromHqID);
-
 module.exports = router;

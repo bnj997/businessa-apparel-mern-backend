@@ -52,24 +52,5 @@ const fileUpload = multer({
   }
 });
 
-// const fileUpload = multer({
-//   storage: multerS3({
-//     s3: s3,
-//     bucket: 'business-apparel',
-//     acl: 'public-read',
-//     metadata: (req, file, cb) => {
-//       cb(null, {fieldName: file.fieldname});
-//     },
-//     key: (req, file, cb) => {
-//       const ext = MIME_TYPE_MAP[file.mimetype];
-//       cb(null, uuidv4() + '.' + ext);
-//     }
-//   }),
-//   fileFilter: (req, file, cb) => {
-//     const isValid = !!MIME_TYPE_MAP[file.mimetype];
-//     let error = isValid ? null : new Error('Invalid mime type! Use only JPEG and PNG');
-//     cb(error, isValid);
-//   }
-// });
 
 module.exports = fileUpload;

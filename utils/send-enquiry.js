@@ -30,8 +30,8 @@ const sendEnquiryForm = async (name, email, organisation, message) => {
   
   // send mail with defined transport object
   let info = await transporter.sendMail({
-    from: 'tom@businessapparel.com.au', // sender address
-    to: 'info@businessapparel.com.au', // list of receivers
+    from: email, // sender address
+    to: 'bnj997@gmail.com', // list of receivers
     subject: `New Enquiry from ${name}`, // Subject line
     html: output, // html body
   });

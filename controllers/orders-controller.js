@@ -8,6 +8,7 @@ const checkPermission = require('../utils/check-permission')
 const sendEnquiryForm = require('../utils/send-enquiry')
 
 const Order = require('../models/order');
+const Orderline = require('../models/order-line');
 const User = require('../models/user')
 
 
@@ -103,6 +104,43 @@ const createOrder = async (req, res, next) => {
 };
 
 
+const deleteOrder = async (req, res, next) => {
+  const orderId = req.params.oid;
+
+  let order;
+  try {
+    order = await Order.findById(orderId).populate('orderlines');
+  } catch (err) {
+    const error = new HttpError(
+      `Something went wrong, could not delete order. + ${err}`,
+      500
+    );
+    return next(error);
+  }
+
+  if (!order) {
+    const error = new HttpError('Could not find order for this id.', 404);
+    return next(error);
+  }
+
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await order.remove({session: sess});
+    await Orderline.deleteMany({order: orderId})
+    await sess.commitTransaction();
+  } catch (err) {
+    const error = new HttpError(
+      `Something went wrong, could not delete order. + ${err}`,
+      500
+    );
+    return next(error);
+  }
+  
+  res.status(200).json({ message: 'Deleted order' });
+};
+
+
 const sendEnquiry = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -131,5 +169,6 @@ const sendEnquiry = async (req, res, next) => {
 exports.createOrder = createOrder;
 exports.getOrdersByUser = getOrdersByUser;
 exports.getOrders = getOrders;
+exports.deleteOrder = deleteOrder;
 exports.getOrderByID = getOrderByID;
 exports.sendEnquiry = sendEnquiry;

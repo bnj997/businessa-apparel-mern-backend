@@ -75,7 +75,9 @@ const createOrder = async (req, res, next) => {
   var userBranch = await User.findById(user).populate('branch')
   userBranch = userBranch.branch._id
 
-  var date = new Date();
+
+  var aestTime = new Date().toLocaleString("en-US", {timeZone: "Australia/Brisbane"});
+  var date = new Date(aestTime);
   var dateString = `${date.toDateString()}, ${date.toLocaleTimeString()}`
 
   const createdOrder = new Order({

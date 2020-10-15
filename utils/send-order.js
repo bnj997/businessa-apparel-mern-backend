@@ -20,6 +20,7 @@ const sendOrder = async (order, cart) => {
     <br></br>
     <table>
       <tr>
+        <th style="padding: 10px; text-align: left">Style Number</th>
         <th style="padding: 10px; text-align: left">Name</th>
         <th style="padding: 10px; text-align: left">Colour</th>
         <th style="padding: 10px; text-align: left">Size</th>
@@ -114,7 +115,7 @@ const sendOrder = async (order, cart) => {
   // send mail with defined transport object
   let admin = await transporter.sendMail({
     from: 'tom@businessapparel.com.au', // sender address
-    to: 'bnj997@gmail.com', // list of receivers
+    to: 'tom@businessapparel.com.au', // list of receivers
     subject: `Order Received from ${order.user.username}`, // Subject line
     html: output, // html body
     attachments: [

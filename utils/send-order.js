@@ -30,6 +30,7 @@ const sendOrder = async (order, cart) => {
       ${cart.map(function(line) {
         return (
           `<tr>
+            <td style="padding: 10px">${line.styleNum}</td>
             <td style="padding: 10px">${line.name}</td>
             <td style="padding: 10px">${line.colour}</td>
             <td style="padding: 10px">${line.size}</td>
@@ -113,7 +114,7 @@ const sendOrder = async (order, cart) => {
   // send mail with defined transport object
   let admin = await transporter.sendMail({
     from: 'tom@businessapparel.com.au', // sender address
-    to: 'tom@businessapparel.com.au', // list of receivers
+    to: 'bnj997@gmail.com', // list of receivers
     subject: `Order Received from ${order.user.username}`, // Subject line
     html: output, // html body
     attachments: [

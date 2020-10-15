@@ -7,6 +7,7 @@ const orderLinesSchema = new Schema({
   _id: {type: String, required: true },
   order: { type: String, required: true, ref: 'Order' },
   garment: { type: String, required: true, ref: 'Garment' },
+  styleNum:  { type: String, required: false},
   name: { type: String, required: true},
   image: { type: String, required: true},
   colour: {type: String, required: true },

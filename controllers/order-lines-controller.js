@@ -32,6 +32,7 @@ const createOrderline = async (req, res, next) => {
       _id: uniqueID,
       order: order,
       garment: cart[i].id,
+      styleNum: cart[i].styleNum,
       name: cart[i].name,
       image: cart[i].image,
       colour: cart[i].colour,

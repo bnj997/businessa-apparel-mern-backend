@@ -8,6 +8,7 @@ const checkPermission = require('../utils/check-permission')
 
 const Order = require('../models/order');
 const OrderLine = require('../models/order-line');
+const sendOrderForm = require('../utils/send-order');
 
 
 
@@ -24,6 +25,7 @@ const createOrderline = async (req, res, next) => {
   }
 
   const {cart} = req.body;
+  const {mainCart} = req.body;
 
   for (var i = 0; i < cart.length; i++) {
     var uniqueID = uuidv4()
@@ -57,7 +59,32 @@ const createOrderline = async (req, res, next) => {
     }
   }
 
-  res.status(201).send(true);
+
+  if (cart.length <= 25) {
+    let thisOrder;
+    try {
+      thisOrder = await Order.findById(order).populate('user').populate('branch').populate('hq');
+    } catch (err) {
+      const error = new HttpError(
+        'Fetching Order failed, could not find Order.',
+        500
+      );
+      return next(error);
+    }
+    try {
+      sendOrderForm(thisOrder, mainCart)
+    } catch (err) {
+      const error = new HttpError(
+        'Sending order failed, please try again.',
+        500
+      );
+      return next(error);
+    }
+    res.status(201).send(true);
+  } else {
+    res.status(201).send(true);
+  }
+
 
   //get order id, hq and branch
   // let thisOrder;

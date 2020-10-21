@@ -5,7 +5,6 @@ const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 const HttpError = require('../models/http-error');
 const checkPermission = require('../utils/check-permission')
-const sendOrder = require('../utils/send-order')
 
 const Order = require('../models/order');
 const OrderLine = require('../models/order-line');
@@ -58,29 +57,29 @@ const createOrderline = async (req, res, next) => {
     }
   }
 
-  //get order id, hq and branch
-  let thisOrder;
-  try {
-    thisOrder = await Order.findById(order).populate('user').populate('branch').populate('hq');
-  } catch (err) {
-    const error = new HttpError(
-      'Fetching Order failed, could not find Order.',
-      500
-    );
-    return next(error);
-  }
-
-  try {
-    sendOrder(thisOrder, cart)
-  } catch (err) {
-    const error = new HttpError(
-      'Sending order failed, please try again.',
-      500
-    );
-    return next(error);
-  }
-
   res.status(201).send(true);
+
+  //get order id, hq and branch
+  // let thisOrder;
+  // try {
+  //   thisOrder = await Order.findById(order).populate('user').populate('branch').populate('hq');
+  // } catch (err) {
+  //   const error = new HttpError(
+  //     'Fetching Order failed, could not find Order.',
+  //     500
+  //   );
+  //   return next(error);
+  // }
+  // try {
+  //   sendOrder(thisOrder, cart)
+  // } catch (err) {
+  //   const error = new HttpError(
+  //     'Sending order failed, please try again.',
+  //     500
+  //   );
+  //   return next(error);
+  // }
+  // res.status(201).send(true);
 };
 
 

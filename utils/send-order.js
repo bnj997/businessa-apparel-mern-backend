@@ -2,12 +2,11 @@
 const nodemailer = require("nodemailer");
 require('dotenv').config();
 
-const sendOrder = async (order, cart) => {
+const sendOrderForm = async (order, cart) => {
   let totalPrice = 0.00
   for (var i = 0; i < cart.length; i++) {
     totalPrice = totalPrice + cart[i].subtotal;
   };
-
 
   const output = `
     <br></br>
@@ -98,7 +97,7 @@ const sendOrder = async (order, cart) => {
     }
   });
 
-  let client = await transporter.sendMail({
+  await transporter.sendMail({
     from: 'tom@businessapparel.com.au', // sender address
     to: order.user.email,
     subject: `Your order has been sent and received: ${order.user.username}  `, // Subject line
@@ -113,11 +112,12 @@ const sendOrder = async (order, cart) => {
   });
 
   // send mail with defined transport object
+
   let admin = await transporter.sendMail({
-    from: 'tom@businessapparel.com.au', // sender address
-    to: 'tom@businessapparel.com.au', // list of receivers
-    subject: `Order Received from ${order.user.username}`, // Subject line
-    html: output, // html body
+    from: 'tom@businessapparel.com.au', 
+    to: 'tom@businessapparel.com.au', 
+    subject: `Order Received from ${order.user.username}`, 
+    html: output, 
     attachments: [
       {
         filename: 'balogo.jpg',
@@ -128,12 +128,9 @@ const sendOrder = async (order, cart) => {
   });
 
   // Preview only available when sending through an Ethereal account
-  console.log("Message sent: %s", client.messageId);
-  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(client));
-
-  console.log("Message sent: %s", admin.messageId);
-  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(admin));
 
 }
 
-module.exports = sendOrder;
+
+
+module.exports = sendOrderForm;

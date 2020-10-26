@@ -113,7 +113,7 @@ const sendOrderForm = async (order, cart) => {
 
   // send mail with defined transport object
 
-  let admin = await transporter.sendMail({
+  await transporter.sendMail({
     from: 'tom@businessapparel.com.au', 
     to: 'tom@businessapparel.com.au', 
     subject: `Order Received from ${order.user.username}`, 

@@ -84,29 +84,6 @@ const createOrderline = async (req, res, next) => {
   } else {
     res.status(201).send(true);
   }
-
-
-  //get order id, hq and branch
-  // let thisOrder;
-  // try {
-  //   thisOrder = await Order.findById(order).populate('user').populate('branch').populate('hq');
-  // } catch (err) {
-  //   const error = new HttpError(
-  //     'Fetching Order failed, could not find Order.',
-  //     500
-  //   );
-  //   return next(error);
-  // }
-  // try {
-  //   sendOrder(thisOrder, cart)
-  // } catch (err) {
-  //   const error = new HttpError(
-  //     'Sending order failed, please try again.',
-  //     500
-  //   );
-  //   return next(error);
-  // }
-  // res.status(201).send(true);
 };
 
 

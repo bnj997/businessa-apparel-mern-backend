@@ -77,7 +77,7 @@ const createOrder = async (req, res, next) => {
   userBranch = userBranch.branch._id
 
 
-  var aestTime = new Date().toLocaleString("en-US", {timeZone: "Australia/Brisbane"});
+  var aestTime = new Date().toLocaleString("en-US", {timeZone: "Australia/Melbourne"});
   var date = new Date(aestTime);
   var dateString = `${date.toDateString()}, ${date.toLocaleTimeString()}`
 

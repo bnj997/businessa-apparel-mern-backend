@@ -7,7 +7,6 @@ const router = express.Router();
 router.post("/enquiry", ordersController.sendEnquiry);
 router.use(checkAuth);
 router.post("/makeorder/:oid", ordersController.sendOrder);
-router.post("/mergeorders", ordersController.mergeOrder);
 router.get("/user/:uid", ordersController.getOrdersByUser);
 router.get("/:oid", ordersController.getOrderByID);
 router.delete("/:oid", ordersController.deleteOrder);

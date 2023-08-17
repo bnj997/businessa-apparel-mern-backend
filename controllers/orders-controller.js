@@ -117,68 +117,57 @@ const mergeOrders = async (req, res, next) => {
     );
   }
 
+  // const sigIds = [
+  //   "855270f0-07ad-4c4d-9bbd-64d93dde3964",
+  //   "630ffad9-6923-1a3f-0831-9f2b87dfap32",
+  //   "78d63670-f7ea-4ab5-bb3c-1ba3cb3e8642",
+  //   "c880d530-4436-45ba-a3d7-c9f69f665db3",
+  //   "a7e8ce26-2f6f-4375-bf70-900ca74ce900",
+  //   "36cf4edb-54ff-4cdc-8bbf-37cf49bae65a",
+  //   "24acf03a-4045-4b3d-920c-b18eeffeb52b",
+  //   "956cd602-465d-44af-aeea-556e4f9c9af6",
+  //   "baa17ad3-01ad-40b4-8ebe-a254421a19f1",
+  //   "630ffb3f-6923-1a3f-0831-9f2c-8ap310a7er1g",
+  //   "630ff9f9-69fd-74f1-0831-9f2af835js124",
+  //   "85ddd88f-636b-458a-95f0-f8396345016a",
+  //   "8bb9134a-c4e9-4e5e-aa7b-af15242fdeca",
+  //   "71b6a583-9e34-4461-afbb-a557df60b163",
+  // ];
+
   const sigIds = [
-    "855270f0-07ad-4c4d-9bbd-64d93dde3964",
-    "630ffad9-6923-1a3f-0831-9f2b87dfap32",
-    "78d63670-f7ea-4ab5-bb3c-1ba3cb3e8642",
-    "c880d530-4436-45ba-a3d7-c9f69f665db3",
-    "a7e8ce26-2f6f-4375-bf70-900ca74ce900",
-    "36cf4edb-54ff-4cdc-8bbf-37cf49bae65a",
-    "24acf03a-4045-4b3d-920c-b18eeffeb52b",
-    "956cd602-465d-44af-aeea-556e4f9c9af6",
-    "baa17ad3-01ad-40b4-8ebe-a254421a19f1",
-    "630ffb3f-6923-1a3f-0831-9f2c-8ap310a7er1g",
-    "630ff9f9-69fd-74f1-0831-9f2af835js124",
-    "85ddd88f-636b-458a-95f0-f8396345016a",
-    "8bb9134a-c4e9-4e5e-aa7b-af15242fdeca",
-    "71b6a583-9e34-4461-afbb-a557df60b163",
+    "41eead67-5e64-4bbf-8a71-bd4fa490dd48",
+    "a42a0ffc-6611-4317-9f41-5e6a73c485d6",
+    "94e870d7-9df7-4988-bc4c-90e4bdf28e28",
   ];
 
-  let ordersToChange;
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
-    ordersToChange = await Order.find({ _id: { $in: sigIds } });
+    // Find all orders with hq field that matches an id in sigIds and update the hq field
+    await Order.updateMany(
+      { hq: { $in: sigIds } },
+      { $set: { hq: "e5457924-497b-4f40-a2d0-2bc23aaa07d1" } },
+      { session } // Pass the session to the updateMany options
+    );
+
+    await session.commitTransaction();
+
+    res.status(200).json({ message: "Orders have been merged successfully" });
   } catch (err) {
+    // Abort the transaction in case of an error
+    await session.abortTransaction();
+
+    console.log(err);
     const error = new HttpError(
       "Merging orders failed, please try again.",
       500
     );
     return next(error);
+  } finally {
+    // End the session whether there was an error or not
+    session.endSession();
   }
-
-  try {
-    const sess = await mongoose.startSession();
-    sess.startTransaction();
-
-    // Using updateMany to update all orders with ids in sigIds
-    await Order.updateMany(
-      { _id: { $in: sigIds } },
-      { hq: "1111-1111-1111" },
-      { session: sess }
-    );
-
-    await sess.commitTransaction();
-  } catch (err) {
-    const error = new HttpError(
-      "Creating Order failed, please try again.",
-      500
-    );
-    return next(error);
-  }
-
-  // Optionally, you can send the updated orders back in the response
-  try {
-    ordersToChange = await Order.find({ _id: { $in: sigIds } });
-  } catch (err) {
-    const error = new HttpError(
-      "Fetching updated orders failed, please try again.",
-      500
-    );
-    return next(error);
-  }
-
-  res.status(201).json({
-    orders: ordersToChange.map((order) => order.toObject({ getters: true })),
-  });
 };
 
 const deleteOrder = async (req, res, next) => {

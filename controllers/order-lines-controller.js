@@ -1,17 +1,14 @@
-const fs = require('fs');
+const fs = require("fs");
 
-const { v4: uuidv4 } = require('uuid');
-const { validationResult } = require('express-validator');
-const mongoose = require('mongoose');
-const HttpError = require('../models/http-error');
-const checkPermission = require('../utils/check-permission')
+const { v4: uuidv4 } = require("uuid");
+const { validationResult } = require("express-validator");
+const mongoose = require("mongoose");
+const HttpError = require("../models/http-error");
+const checkPermission = require("../utils/check-permission");
 
-const Order = require('../models/order');
-const OrderLine = require('../models/order-line');
-const sendOrderForm = require('../utils/send-order');
-
-
-
+const Order = require("../models/order");
+const OrderLine = require("../models/order-line");
+const sendOrderForm = require("../utils/send-order");
 
 const createOrderline = async (req, res, next) => {
   const order = req.params.oid;
@@ -20,15 +17,15 @@ const createOrderline = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
-      new HttpError('Invalid inputs passed, please check your data.', 422)
+      new HttpError("Invalid inputs passed, please check your data.", 422)
     );
   }
 
-  const {cart} = req.body;
-  const {mainCart} = req.body;
+  const { cart } = req.body;
+  const { mainCart } = req.body;
 
   for (var i = 0; i < cart.length; i++) {
-    var uniqueID = uuidv4()
+    var uniqueID = uuidv4();
     const createdOrderline = new OrderLine({
       _id: uniqueID,
       order: order,
@@ -40,42 +37,44 @@ const createOrderline = async (req, res, next) => {
       size: cart[i].size,
       quantity: cart[i].quantity,
       price: cart[i].price,
-      subtotal: cart[i].subtotal
+      subtotal: cart[i].subtotal,
     });
 
     try {
       const sess = await mongoose.startSession();
       sess.startTransaction();
-      orderOfInterest.orderlines.push(uniqueID)
-      await createdOrderline.save({ session: sess }); 
-      await orderOfInterest.save({ session: sess }); 
+      orderOfInterest.orderlines.push(uniqueID);
+      await createdOrderline.save({ session: sess });
+      await orderOfInterest.save({ session: sess });
       await sess.commitTransaction();
     } catch (err) {
       const error = new HttpError(
-        'Creating Order Line failed, please try again.',
+        "Creating Order Line failed, please try again.",
         500
       );
       return next(error);
     }
   }
 
-
   if (cart.length <= 25) {
     let thisOrder;
     try {
-      thisOrder = await Order.findById(order).populate('user').populate('branch').populate('hq');
+      thisOrder = await Order.findById(order)
+        .populate("user")
+        .populate("branch")
+        .populate("hq");
     } catch (err) {
       const error = new HttpError(
-        'Fetching Order failed, could not find Order.',
+        "Fetching Order failed, could not find Order.",
         500
       );
       return next(error);
     }
     try {
-      sendOrderForm(thisOrder, mainCart)
+      sendOrderForm(thisOrder, mainCart);
     } catch (err) {
       const error = new HttpError(
-        'Sending order failed, please try again.',
+        "Sending order failed, please try again.",
         500
       );
       return next(error);
@@ -86,15 +85,20 @@ const createOrderline = async (req, res, next) => {
   }
 };
 
-
-
 const getOrderlinesByOrder = async (req, res, next) => {
-
-  const orderID = req.params.oid
+  const orderID = req.params.oid;
   let orderWithOrderlines;
 
   try {
-    orderWithOrderlines = await Order.findById(orderID).populate('orderlines');
+    orderWithOrderlines = await Order.findById(orderID).populate({
+      path: "orderlines",
+      options: {
+        sort: {
+          styleNum: 1, // First by styleNum (ascending)
+          colour: 1, // Then by colour (ascending)
+        },
+      },
+    });
   } catch (err) {
     const error = new HttpError(
       `Fetching order lines failed, try again later. + ${err} `,
@@ -105,15 +109,16 @@ const getOrderlinesByOrder = async (req, res, next) => {
 
   if (!orderWithOrderlines || orderWithOrderlines.orderlines.length === 0) {
     return next(
-      new HttpError('Could not find order items for the provided order.', 404)
+      new HttpError("Could not find order items for the provided order.", 404)
     );
   }
 
-  res.status(201).json({ orderlines: orderWithOrderlines.orderlines.map(orderline => orderline.toObject({ getters: true })) });
+  res.status(201).json({
+    orderlines: orderWithOrderlines.orderlines.map((orderline) =>
+      orderline.toObject({ getters: true })
+    ),
+  });
 };
-
-
 
 exports.createOrderline = createOrderline;
 exports.getOrderlinesByOrder = getOrderlinesByOrder;
-

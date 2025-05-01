@@ -1,12 +1,23 @@
 "use strict";
 const nodemailer = require("nodemailer");
-require('dotenv').config();
+require("dotenv").config();
 
 const sendOrderForm = async (order, cart) => {
-  let totalPrice = 0.00
+  let totalPrice = 0.0;
   for (var i = 0; i < cart.length; i++) {
     totalPrice = totalPrice + cart[i].subtotal;
-  };
+  }
+
+  const sortedCart = [...cart].sort((a, b) => {
+    const numA = parseFloat(a.styleNum);
+    const numB = parseFloat(b.styleNum);
+    if (!isNaN(numA) && !isNaN(numB)) {
+      if (numA !== numB) return numA - numB;
+    } else if (a.styleNum !== b.styleNum) {
+      return a.styleNum.localeCompare(b.styleNum);
+    }
+    return a.colour.localeCompare(b.colour);
+  });
 
   const output = `
     <br></br>
@@ -27,9 +38,9 @@ const sendOrderForm = async (order, cart) => {
         <th style="padding: 10px; text-align: left">Qty</th>
         <th style="padding: 10px; text-align: left">Subtotal</th>
       </tr>
-      ${cart.map(function(line) {
-        return (
-          `<tr>
+      ${sortedCart
+        .map(function (line) {
+          return `<tr>
             <td style="padding: 10px">${line.styleNum}</td>
             <td style="padding: 10px">${line.name}</td>
             <td style="padding: 10px">${line.colour}</td>
@@ -37,16 +48,18 @@ const sendOrderForm = async (order, cart) => {
             <td style="padding: 10px">$${line.price.toFixed(2)}</td>
             <td style="padding: 10px">${line.quantity}</td>
             <td style="padding: 10px">$${line.subtotal.toFixed(2)}</td>
-          </tr>`
-        )}).join('')
-      }
+          </tr>`;
+        })
+        .join("")}
       <tr>
         <th style="padding: 10px; font-weight: bold; text-align: left">Subtotal: </th>
         <th style="padding: 10px"></th>
         <th style="padding: 10px"></th>
         <th style="padding: 10px"></th>
         <th style="padding: 10px"></th>
-        <th style="padding: 10px; font-weight: bold">$${totalPrice.toFixed(2)}</th>
+        <th style="padding: 10px; font-weight: bold">$${totalPrice.toFixed(
+          2
+        )}</th>
       </tr>
       <tr>
         <th style="padding: 10px; font-weight: bold; text-align: left">GST: </th>
@@ -54,7 +67,9 @@ const sendOrderForm = async (order, cart) => {
         <th style="padding: 10px"></th>
         <th style="padding: 10px"></th>
         <th style="padding: 10px"></th>
-        <th style="padding: 10px; font-weight: bold">$${(totalPrice * 0.1).toFixed(2)}</th>
+        <th style="padding: 10px; font-weight: bold">$${(
+          totalPrice * 0.1
+        ).toFixed(2)}</th>
       </tr>
       <tr>
         <th style="padding: 10px; font-weight: bold; text-align: left">Total Cost: </th>
@@ -62,7 +77,10 @@ const sendOrderForm = async (order, cart) => {
         <th style="padding: 10px"></th>
         <th style="padding: 10px"></th>
         <th style="padding: 10px"></th>
-        <th style="padding: 10px; font-weight: bold">$${((totalPrice * 0.1) + totalPrice).toFixed(2)}</th>
+        <th style="padding: 10px; font-weight: bold">$${(
+          totalPrice * 0.1 +
+          totalPrice
+        ).toFixed(2)}</th>
       </tr>
     </table>
     <hr align="left" style="width: 50%;">
@@ -93,44 +111,41 @@ const sendOrderForm = async (order, cart) => {
       pass: process.env.USER_PASSWORD, // generated ethereal password
     },
     tls: {
-      rejectUnauthorized: false
-    }
+      rejectUnauthorized: false,
+    },
   });
 
   await transporter.sendMail({
-    from: 'tom@businessapparel.com.au', // sender address
+    from: "tom@businessapparel.com.au", // sender address
     to: order.user.email,
     subject: `Your order has been sent and received: ${order.user.username}  `, // Subject line
     html: output, // html body
     attachments: [
       {
-        filename: 'balogo.jpg',
-        path: __dirname + '/balogo.jpg',
-        cid: 'unique@cid'
+        filename: "balogo.jpg",
+        path: __dirname + "/balogo.jpg",
+        cid: "unique@cid",
       },
-    ]
+    ],
   });
 
   // send mail with defined transport object
 
   await transporter.sendMail({
-    from: 'tom@businessapparel.com.au', 
-    to: 'tom@businessapparel.com.au', 
-    subject: `Order Received from ${order.user.username}`, 
-    html: output, 
+    from: "tom@businessapparel.com.au",
+    to: "tom@businessapparel.com.au",
+    subject: `Order Received from ${order.user.username}`,
+    html: output,
     attachments: [
       {
-        filename: 'balogo.jpg',
-        path: __dirname + '/balogo.jpg',
-        cid: 'unique@cid'
+        filename: "balogo.jpg",
+        path: __dirname + "/balogo.jpg",
+        cid: "unique@cid",
       },
-    ]
+    ],
   });
 
   // Preview only available when sending through an Ethereal account
-
-}
-
-
+};
 
 module.exports = sendOrderForm;
